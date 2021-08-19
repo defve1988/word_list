@@ -10,10 +10,12 @@ import QuizRes from './dialog/QuizRes.vue'
 import RowHeader from './word_list/RowHeader.vue'
 import Notes from './word_list/Notes.vue'
 import NewWord from './word_list/NewWord.vue'
+import CardConfig from './word_list/CardConfig.vue'
 import OneWord from './word_list/OneWord.vue'
 import OneRow from './word_list/OneRow.vue'
 import WordTableList from './word_list/WordTableList.vue'
 import WordTableGrid from './word_list/WordTableGrid.vue'
+import WordTableCard from './word_list/WordTableCard.vue'
 import FlashCard from './word_list/FlashCard.vue'
 import ControlBar from './word_list/control_bar.vue'
 import WordCard from './word_list/WordCard.vue'
@@ -34,11 +36,13 @@ const installObj = {
     // word list table
     Vue.component('RowHeader', RowHeader)
     Vue.component('NewWord', NewWord)
+    Vue.component('CardConfig', CardConfig)
     Vue.component('Notes', Notes)
     Vue.component('OneWord', OneWord)
     Vue.component('OneRow', OneRow)
     Vue.component('WordTableList', WordTableList)
     Vue.component('WordTableGrid', WordTableGrid)
+    Vue.component('WordTableCard', WordTableCard)
     Vue.component('FlashCard', FlashCard)
     Vue.component('ControlBar', ControlBar)
     Vue.component('WordCard', WordCard)

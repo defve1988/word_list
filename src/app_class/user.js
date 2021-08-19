@@ -12,6 +12,7 @@ export default class User {
       this.auth.user.displayName
       this.auth.user.photoURL
 
+      this.notebook_info
       this.notebooks.noteBooks
       this.notebooks.noteBook_detail
 
@@ -31,6 +32,7 @@ export default class User {
       this.notebooks.del_notebook()
 
       this.notebooks.currNotebook.add_record()
+      this.notebooks.currNotebook.get_word()
       this.notebooks.currNotebook.update_record()
       this.notebooks.currNotebook.del_record()
       this.notebooks.currNotebook.export_notebook()
@@ -45,10 +47,15 @@ export default class User {
 
       this.quiz = new Quiz()
 
-      firebase.auth().onAuthStateChanged(() => {
-         this.notebooks.update(this.auth.user_ref)
-         this.quiz.user_ref = this.auth.user_ref
-      })
+      // note: if defined in higher level, then this is not necessary
+      // firebase.auth().onAuthStateChanged(() => {
+      //    this.notebooks.update(this.auth.user_ref)
+      //       .then(() => {
+      //          this.quiz.user_ref = this.auth.user_ref
+      //          this.notebook_info = this.get_noteBooks()
+      //          // console.log(this)
+      //       })
+      // })
    }
 
    async init_user_db() {
@@ -104,9 +111,9 @@ export default class User {
       }
    }
 
-   async init_quiz(notebook_id, config){
+   async init_quiz(notebook_id, config) {
       await this.notebooks.switch_notebook(notebook_id),
-      await this.quiz.init(this.notebooks.currNotebook, config)
+         await this.quiz.init(this.notebooks.currNotebook, config)
       return Promise.resolve()
    }
 

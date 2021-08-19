@@ -58,7 +58,7 @@ export default class Quiz {
    }
 
    async init(notebook, config = null) {
-      console.log(config)
+      // console.log(config)
       this.notebook = notebook
       this.quiz_list = []
       try {
@@ -71,13 +71,17 @@ export default class Quiz {
          // this.notebook = new NoteBook(notebook_ref)
          // await this.notebook.init()
 
-         if (notebook.word_list.length <= this.config.question_num) {
-            alert("No enough words!")
-            return Promise.resolve()
-         }
-
          let selecting
          switch (this.config.range) {
+            case "necessary":
+               notebook.sort("learned")
+               notebook.sort("error rate")
+               // console.log(notebook.word_list)
+               selecting = notebook.word_list.filter(w => {
+                  return !w.mastered
+               })
+               selecting = selecting.slice(0, this.config.question_num + 1)
+               break;
             case "all":
                selecting = notebook.word_list
                break;
@@ -96,6 +100,12 @@ export default class Quiz {
                   return !w.mastered
                })
                break;
+         }
+         // console.log(selecting)
+
+         if (selecting.length < this.config.question_num) {
+            alert("No enough words!")
+            return Promise.resolve()
          }
 
          let questions = _.sample(selecting, this.config.question_num)
@@ -135,7 +145,7 @@ export default class Quiz {
             })
          })
 
-         console.log(this.quiz_list)
+         // console.log(this.quiz_list)
          return Promise.resolve()
       } catch (error) {
          console.error("Error when creating quiz:", error);
@@ -150,13 +160,13 @@ export default class Quiz {
          const {
             serverTimestamp
          } = firebase.firestore.FieldValue;
-         for (var i=0; i<this.quiz_list.length;i++){
+         for (var i = 0; i < this.quiz_list.length; i++) {
             let q = this.quiz_list[i]
             let word = this.notebook.get_word(q.id)
             let prop = {
                learned: word.learned + 1,
                error: word.error,
-               last_tested: serverTimestamp(),
+               last_learned: serverTimestamp(),
             }
             if (!q.correct) {
                prop.error += 1

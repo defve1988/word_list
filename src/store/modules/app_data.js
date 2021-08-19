@@ -2,9 +2,21 @@ import world_language from "@/app_class/languages"
 import User from "@/app_class/user";
 // import Test from "@/app_class/test";
 
-// import firebase from "firebase/app";
+import firebase from "firebase/app";
 // import "firebase/auth";
 // import 'firebase/firestore';
+
+var newUser = new User()
+
+firebase.auth().onAuthStateChanged(() => {
+   state.user.notebooks.update(state.user.auth.user_ref)
+      .then(() => {
+         state.user.quiz.user_ref = state.user.auth.user_ref
+         state.user.notebook_info = state.user.get_noteBooks()
+         state.notebook_info = newUser.notebook_info
+      })
+   // console.log(state)
+})
 
 const state = {
 
@@ -12,14 +24,19 @@ const state = {
    // test: new Test(),
 
    wordnik_key: "a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5",
-   user: new User(),
+   user: newUser,
    world_language: world_language.world_language,
 
    isloading: false,
 
-   // this controls the entering animation of each row 
-   list_view: true,
+   // this controls the entering animation of each row
+   word_table_view: "list",
+
+   card_front: null,
+   card_back: null,
+
    word_list_loaded: false,
+   word_list_leave: false,
    word_grid_loaded: false,
 
    register_dialog: false,
@@ -28,10 +45,12 @@ const state = {
    select_language_dialog: false,
    select_language: [],
 
+   notebook_info: null,
 
    new_notebook: false, // whether the dialog create a new notebook
    update_language_notebook: "", // update which notebook
 
+   show_word_list_notes: true,
 
    content_menu: {
       show: false,
@@ -50,19 +69,22 @@ const state = {
       notes: null
    },
 
+
+
    quiz_dialog: {
       show: false,
       created: false,
       notebook_id: "",
       quiz_type: "",
-      play_audio: true,
+      play_audio_1: false,
+      play_audio_2: true,
       config: {
          question_num: 20,
          choice_num: 4,
          question_lan: "en",
          choice_lan: "zh",
          // TODO:
-         range: "all", //all, favorite, mastered, not mastered
+         range: "necessary", //necessary, all, favorite, mastered, not mastered
       }
    },
    quiz_res_dialog: {
@@ -77,9 +99,7 @@ const getters = {
 
 };
 
-const actions = {
-
-};
+const actions = {};
 
 const mutations = {
 
@@ -97,6 +117,7 @@ const mutations = {
       state.content_menu.y = e.clientY;
       state.content_menu.target = e.target;
    },
+
 };
 
 export default {

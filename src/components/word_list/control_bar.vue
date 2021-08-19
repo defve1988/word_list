@@ -26,16 +26,11 @@
 
         <v-list>
           <v-list-item-group>
-            <v-list-item
-              v-for="(item, index) in filters"
-              :key="index"
-              dense
-              @click="filter_list(item)"
-            >
+            <v-list-item v-for="(item, index) in filters" :key="index" dense>
               <v-list-item-action class="mr-2">
                 <v-checkbox
                   v-model="item.selected"
-                  @click.native.stop
+                  @click="filter_list(item)"
                 ></v-checkbox>
               </v-list-item-action>
 
@@ -107,7 +102,8 @@
       </v-btn>
     </template>
 
-    <NewWord />
+    <NewWord v-if="app_data.word_table_view!='flash_card'"/>
+    <CardConfig v-if="app_data.word_table_view=='flash_card'"/>
     <v-file-input
       id="file-input"
       type="file"
@@ -134,6 +130,7 @@ export default {
         func: "list_view",
       },
       { text: "grid view", icon: "mdi-grid", func: "gird_view" },
+      { text: "flash card", icon: "mdi-card-outline", func: "flash_card" },
       { text: "sort", icon: "mdi-sort", func: "sort" },
       { text: "filter", icon: "mdi-filter-menu", func: "filter" },
       { text: "upload", icon: "mdi-cloud-upload", func: "upload" },
@@ -142,6 +139,7 @@ export default {
     filters: [
       { title: "Favorite", selected: false },
       { title: "Mastered", selected: false },
+      { title: "Notes", selected: true },
     ],
     sorts: [
       { title: "Random", ascending: true },
@@ -160,7 +158,11 @@ export default {
     filter_list(item) {
       this.app_data.word_list_loaded = true;
       this.app_data.word_grid_loaded = true;
-      item.selected = !item.selected;
+      // item.selected = !item.selected;
+      if (item.title == "Notes") {
+        this.app_data.show_word_list_notes =
+          !this.app_data.show_word_list_notes;
+      }
       this.app_data.user.notebooks.currNotebook.filter({
         favorite: this.filters[0].selected,
         mastered: this.filters[1].selected,
@@ -169,7 +171,6 @@ export default {
     sort_list(sort) {
       this.app_data.word_list_loaded = true;
       this.app_data.word_grid_loaded = true;
-
       sort.ascending = !sort.ascending;
       this.app_data.user.notebooks.currNotebook.sort(
         sort.title.toLowerCase(),
@@ -192,11 +193,15 @@ export default {
           this.app_data.user.notebooks.currNotebook.export_notebook();
           break;
         case "gird_view":
-          this.app_data.list_view = false;
+          this.app_data.word_table_view = "grid";
           this.app_data.word_grid_loaded = false;
           break;
         case "list_view":
-          this.app_data.list_view = true;
+          this.app_data.word_table_view = "list";
+          this.app_data.word_list_loaded = false;
+          break;
+        case "flash_card":
+          this.app_data.word_table_view = "flash_card";
           this.app_data.word_list_loaded = false;
           break;
       }

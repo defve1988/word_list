@@ -1,21 +1,14 @@
 <template>
   <v-container class="mt-2">
-    <transition-group name="list-complete" mode="out-in">
+    <transition-group :name="transition_group" mode="out-in">
       <v-row
-        v-for="(
-          word, index
-        ) in app_data.user.notebooks.currNotebook.word_list"
+        v-for="(word, index) in app_data.user.notebooks.currNotebook.word_list"
         :key="word.id"
-        class="list-complete-item"
-        :class="app_data.word_list_loaded ? '' : 'enter_row'"
+        :class="word_list_class"
         :style="`animation-delay:${index * delay_ratio}ms;`"
       >
         <!-- {{word.en}} -->
-        <OneRow
-          v-if="word.show"
-          :record="word"
-          :row_index="index"
-        />
+        <OneRow v-if="word.show" :record="word" :row_index="index" />
       </v-row>
     </transition-group>
 
@@ -37,12 +30,25 @@ export default {
     delay_ratio: 20,
     page: 1,
     page_content: 10,
-    count:0
+    count: 0,
   }),
   computed: {
     ...mapState({
       app_data: "app_data",
     }),
+    transition_group(){
+      let res ="list-complete"
+      if (!this.app_data.word_list_loaded) res = ""
+      if (this.app_data.word_list_leave) res = ""
+      return res
+    },
+    word_list_class(){
+      let res ="list-complete-item"
+      if (!this.app_data.word_list_loaded) res = "enter_row"
+      if (this.app_data.word_list_leave) res = "leave_row"
+      // console.log(res)
+      return res
+    },
     // TODO: seperate pages
     page_length() {
       // .slice(
@@ -75,8 +81,27 @@ export default {
   }
 }
 
+@keyframes slide_out {
+  from {
+    transform: translateX(0px);
+    opacity: 1;
+    visibility: visible;
+  }
+  to {
+    transform: translateX(500px);
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
 .enter_row {
   animation-name: slide_in;
+  animation-duration: 600ms;
+  animation-fill-mode: both;
+}
+
+.leave_row {
+  animation-name: slide_out;
   animation-duration: 600ms;
   animation-fill-mode: both;
 }
@@ -92,5 +117,6 @@ export default {
 }
 .list-complete-leave-active {
   position: absolute;
+  transition: all 0s
 }
 </style>

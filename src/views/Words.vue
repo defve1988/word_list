@@ -1,8 +1,9 @@
 <template>
   <v-container>
     <ControlBar />
-    <WordTableList v-if="app_data.list_view" />
-    <WordTableGrid v-else />
+    <WordTableList v-if="app_data.word_table_view=='list'" />
+    <WordTableGrid v-if="app_data.word_table_view=='grid'" />
+    <WordTableCard v-if="app_data.word_table_view=='flash_card'" />
   </v-container>
 </template>
 

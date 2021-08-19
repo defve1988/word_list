@@ -91,7 +91,9 @@ export default {
           languages: this.select_language,
         });
       }
+      this.app_data.notebook_info = this.app_data.user.get_noteBooks();
       this.isloading = false;
+      this.app_data.new_notebook = false;
       this.app_data.select_language_dialog = false;
     },
   },

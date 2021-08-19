@@ -208,8 +208,8 @@ export default class NoteBook {
          let row_header = this.languages.map(l => this.languages_details[l].display)
          let row_header_key = this.languages.map(l => this.languages_details[l].key)
 
-         row_header = row_header.concat(["favorite", "mastered", "learned", "error", "note"])
-         row_header_key = row_header_key.concat(["favorite", "mastered", "learned", "error", "note"])
+         row_header = row_header.concat(["favorite", "mastered", "learned", "error", "notes"])
+         row_header_key = row_header_key.concat(["favorite", "mastered", "learned", "error", "notes"])
 
          // console.log(row_header)
 
@@ -217,7 +217,11 @@ export default class NoteBook {
 
          this.word_list.forEach((word) => {
             let row = _.map(row_header_key, (key) => {
-               return word[key]
+               if (key == "notes") {
+                  return `"${word[key]}"`
+               } else {
+                  return word[key]
+               }
             })
             csvContent += row.join(",") + "\r\n";
          });
@@ -245,7 +249,11 @@ export default class NoteBook {
          case "date":
             this.word_list = _.sortBy(this.word_list, 'createdAt')
             break;
+         case "learned":
+            this.word_list = _.sortBy(this.word_list, 'last_learned')
+            break;
          case "error rate":
+            // todo:  
             this.word_list = _.sortBy(this.word_list, 'error')
             break;
          case "type":

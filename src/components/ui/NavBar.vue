@@ -7,6 +7,34 @@
     width="200"
     style="background: #eeee"
   >
+    <v-list-group appendIcon="" @click="click_notebook()">
+      <template v-slot:activator>
+        <v-list-item-icon>
+          <v-icon>{{ notebook_item.icon }}</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title class="font-weight-light">{{
+            notebook_item.text
+          }}</v-list-item-title>
+        </v-list-item-content>
+      </template>
+      <v-list-item
+        v-for="(notebook, index) in app_data.notebook_info"
+        :key="index"
+        link
+        dense
+        @click="open_notebook(notebook.id)"
+      >
+        <v-list-item-icon class="ml-5 mr-2">
+          <v-icon small>mdi-notebook</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title
+          class="font-weight-light"
+          v-text="notebook.notebook_name"
+        ></v-list-item-title>
+      </v-list-item>
+    </v-list-group>
+
     <v-list>
       <v-list-item
         v-for="(item, i) in items"
@@ -35,9 +63,12 @@ import utilities from "@/app_class/utilities";
 
 export default {
   data: () => ({
-    drawer: true,
+    notebook_item: {
+      icon: "mdi-notebook-multiple",
+      text: "NoteBooks",
+      func: "notebook",
+    },
     items: [
-      { icon: "mdi-notebook-multiple", text: "NoteBooks", func: "notebook" },
       { icon: "mdi-progress-question", text: "Quizzes", func: "quiz" },
       { icon: "mdi-chart-bar", text: "Statistics", func: "stats" },
       { icon: "mdi-information", text: "About", func: "test" },
@@ -53,32 +84,46 @@ export default {
   },
   methods: {
     ...mapMutations(["LOGOUT"]),
+    click_notebook() {
+      this.app_data.mini_drawer = false;
+      this.nav_func("notebook");
+    },
     nav_func(func) {
       switch (func) {
         case "notebook":
-          this.$router.replace({
-            path: "Notebooks",
-          }).catch(utilities.handle_redundant_route);
+          this.$router
+            .replace({
+              path: "Notebooks",
+            })
+            .catch(utilities.handle_redundant_route);
           break;
         case "quiz":
-          this.$router.replace({
-            path: "Quiz",
-          }).catch(utilities.handle_redundant_route);
+          this.$router
+            .replace({
+              path: "Quiz",
+            })
+            .catch(utilities.handle_redundant_route);
           break;
         case "stats":
-          this.$router.replace({
-            path: "Stats",
-          }).catch(utilities.handle_redundant_route);
+          this.$router
+            .replace({
+              path: "Stats",
+            })
+            .catch(utilities.handle_redundant_route);
           break;
         case "test":
           if (this.app_data.dev_test) {
-            this.$router.replace({
-              path: "develop_test",
-            }).catch(utilities.handle_redundant_route);
+            this.$router
+              .replace({
+                path: "develop_test",
+              })
+              .catch(utilities.handle_redundant_route);
           } else {
-            this.$router.replace({
-              path: "About",
-            }).catch(utilities.handle_redundant_route);
+            this.$router
+              .replace({
+                path: "About",
+              })
+              .catch(utilities.handle_redundant_route);
           }
           break;
         case "logout":
@@ -88,9 +133,27 @@ export default {
     },
     logout() {
       this.app_data.user.auth.logout();
-      this.$router.replace({
-        path: "",
-      }).catch(utilities.handle_redundant_route);
+      this.$router
+        .replace({
+          path: "",
+        })
+        .catch(utilities.handle_redundant_route);
+    },
+    async open_notebook(notebook_id) {
+      this.app_data.isloading = true;
+      // ensure the animation is correct.
+      this.app_data.word_list_loaded = false;
+      this.app_data.word_list_leave = true;
+
+      await this.app_data.user.notebooks.switch_notebook(notebook_id);
+      this.app_data.word_list_leave = false;
+
+      this.$router
+        .replace({
+          path: "Words",
+        })
+        .catch(utilities.handle_redundant_route);
+      this.app_data.isloading = false;
     },
   },
 };

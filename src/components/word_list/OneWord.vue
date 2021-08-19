@@ -1,7 +1,7 @@
 <template>
   <div class="word_div">
     <span v-if="numbered" style="float: left"> {{ numbered }}. </span>
-    <v-tooltip bottom :disabled="notes == ''" nudge-bottom="10" max-width="200">
+    <v-tooltip bottom :disabled="notes == '' || app_data.show_word_list_notes" nudge-bottom="10" max-width="300">
       <template v-slot:activator="{ on, attrs }">
         <span
           class="word"
@@ -20,7 +20,7 @@
           {{ word == "" ? empty_word : word }}
         </span>
       </template>
-      <span>{{ notes }}</span>
+      <pre class="note_tooltip" style="max-width:300px" v-html="notes"></pre>
     </v-tooltip>
 
     <audio :id="`audio_${language}_${id}`" preload="auto" type="audio/mpeg" :src="audio_src"></audio>
@@ -116,6 +116,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.note_tooltip{
+  white-space: pre-wrap;
+}
 .word {
   cursor: pointer;
   font-weight: 300;

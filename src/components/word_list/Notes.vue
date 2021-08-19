@@ -12,7 +12,7 @@
         id="word_note_text"
         @keydown="key_down"
         autofocus
-        v-model="notes"
+        v-model="app_data.notes_dialog.notes"
       ></v-textarea>
 
       <v-btn
@@ -46,9 +46,7 @@ export default {
     }),
   },
   watch: {},
-  data: () => ({
-    notes: "",
-  }),
+  data: () => ({}),
   methods: {
     ...mapMutations([]),
     key_down(e) {
@@ -70,7 +68,7 @@ export default {
       this.app_data.user.notebooks.currNotebook.update_record(
         this.app_data.notes_dialog.id,
         {
-          notes: this.notes,
+          notes: this.app_data.notes_dialog.notes,
         }
       );
 
@@ -81,7 +79,7 @@ export default {
       );
 
       this.app_data.user.notebooks.currNotebook.word_list[index].notes =
-        this.notes;
+        this.app_data.notes_dialog.notes;
 
       this.app_data.notes_dialog = {
         show: false,

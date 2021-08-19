@@ -93,6 +93,33 @@ export default class userNotebooks {
             this.noteBook_detail[notebook_id],
             props
          )
+         // if languages were updated
+         if (Object.keys(props).includes("languages")){
+            let language_display = utilities.en2display(props.languages)
+            let language_keys = utilities.display2key(language_display)
+            // console.log(language_keys)
+            // console.log(props.languages)
+            let word_list_ref = notebook_ref.collection("word_list")
+            let word_list = await word_list_ref.get()
+            if (!word_list.empty){
+               word_list.forEach((doc) => {
+                  let changed = false
+                  let record = doc.data()
+                  language_keys.forEach(key=>{
+                     if (!Object.keys(record).includes(key)){
+                        record[key] = ""
+                        changed = true
+                     }
+                  })
+                  if(changed){
+                     word_list_ref.doc(doc.id).update(record)
+                  }
+               });
+
+            }
+
+         }
+
          return Promise.resolve()
       } catch (error) {
          console.error("Error when updating notebook:", error);

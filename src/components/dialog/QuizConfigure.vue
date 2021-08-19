@@ -17,7 +17,6 @@
             v-model="range"
             :items="quiz_range"
             label="Select quiz range"
-            disabled
             outlined
             dense
             class="ml-2"
@@ -41,6 +40,7 @@
             label="Question languages"
             outlined
             dense
+            :disabled="selected_quiz_type != 'Word-Word'"
             class="mr-2"
           ></v-combobox>
           <v-combobox
@@ -56,9 +56,9 @@
         <v-list-item>
           <v-slider
             v-model="question_num"
-            step="5"
+            step="1"
             thumb-label
-            min="10"
+            min="1"
             max="50"
             ticks
             label="Question number"
@@ -79,8 +79,15 @@
 
         <v-list-item>
           <v-checkbox
-            v-model="app_data.quiz_dialog.play_audio"
-            label="Play audio"
+            v-model="app_data.quiz_dialog.play_audio_1"
+            label="Play question audio"
+            class="mr-2"
+          ></v-checkbox>
+
+          <v-checkbox
+            v-model="app_data.quiz_dialog.play_audio_2"
+            label="Play answer audio"
+            class="ml-2"
           ></v-checkbox>
         </v-list-item>
       </v-list>
@@ -113,8 +120,8 @@ export default {
     choice_num: 4,
     question_lan: "",
     choice_lan: "",
-    range: "All",
-    quiz_range: ["All", "Favorite", "Note Mastered", "Mastered"],
+    range: "Necessary",
+    quiz_range: ["Necessary", "All", "Favorite", "Note Mastered", "Mastered"],
   }),
   mounted() {
     let res = this.app_data.user.notebooks.noteBooks.map((id) => {
@@ -150,7 +157,7 @@ export default {
   },
   methods: {
     async confirm() {
-      console.log(this.selected_notebook);
+      // console.log(this.selected_notebook);
       let index = _.indexOf(this.notebook_names, this.selected_notebook);
       let id = this.app_data.user.notebooks.noteBooks[index];
       this.app_data.quiz_dialog.notebook_id = id;
@@ -162,6 +169,16 @@ export default {
         choice_lan: utilities.display2key([this.choice_lan])[0],
         range: this.range.toLowerCase(),
       };
+
+      if (this.selected_quiz_type != "Word-Word") {
+        this.app_data.quiz_dialog.config.question_lan =
+          this.app_data.quiz_dialog.config.choice_lan;
+      }
+
+      if (this.selected_quiz_type == "Spell") {
+        this.app_data.quiz_dialog.config.choice_num = 0;
+      }
+
       await this.app_data.user.init_quiz(id, this.app_data.quiz_dialog.config);
       this.app_data.quiz_dialog.created = true;
       this.app_data.quiz_dialog.show = false;

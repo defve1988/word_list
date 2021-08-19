@@ -70,13 +70,13 @@
               >
                 <v-icon> mdi-pencil </v-icon>
               </v-btn>
-              <!-- <v-btn
+              <v-btn
                 icon
                 @click="edit_notebook_languages(notebook.id)"
                 @click.native.stop
               >
                 <v-icon> mdi-translate </v-icon>
-              </v-btn> -->
+              </v-btn>
               <v-btn icon @click="del_notebook(notebook.id)" @click.native.stop>
                 <v-icon> mdi-delete </v-icon>
               </v-btn>
@@ -99,12 +99,11 @@ export default {
     ...mapState({
       app_data: "app_data",
     }),
-    noteBooks() {
-      return this.app_data.user.get_noteBooks();
+    noteBooks(){
+      return this.app_data.notebook_info
     },
   },
-  watch: {
-  },
+  watch: {},
   data: () => ({
     editing_notebook: null, // current editing notebook name
   }),
@@ -121,7 +120,11 @@ export default {
       this.app_data.isloading = true;
       // ensure the animation is correct.
       this.app_data.word_list_loaded = false;
+      this.app_data.word_list_leave = true;
+
       await this.app_data.user.notebooks.switch_notebook(notebook_id);
+      this.app_data.word_list_leave = false;
+
       this.$router
         .replace({
           path: "Words",
@@ -138,18 +141,19 @@ export default {
     },
 
     async edit_notebook_languages(notebook_id) {
-      this.app_data.new_notebook = false;
       this.app_data.update_language_notebook = notebook_id;
       // get current notebook language
       let notebooks = this.app_data.user.get_noteBooks(notebook_id);
-      console.log(notebooks);
+      // console.log(notebooks);
 
       this.app_data.select_language = notebooks.languages;
+      this.app_data.new_notebook = false;
       this.app_data.select_language_dialog = true;
     },
 
     async del_notebook(notebook_id) {
       await this.app_data.user.notebooks.del_notebook(notebook_id);
+      this.app_data.notebook_info = this.app_data.user.get_noteBooks();
     },
 
     focus_select(el) {
@@ -166,6 +170,7 @@ export default {
       });
       e.target.setAttribute("contenteditable", false);
       this.editing_notebook = null;
+      this.app_data.notebook_info = this.app_data.user.get_noteBooks();
     },
   },
 };

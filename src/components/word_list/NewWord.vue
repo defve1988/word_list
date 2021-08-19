@@ -136,13 +136,19 @@ export default {
 
           // console.log(this.app_data.user.notebooks.currNotebook.word_list);
           let next_lan = this.showned_language[0].key;
-          document.getElementById(`new_word_${next_lan}`).focus();
+          let el = document.getElementById(`new_word_${next_lan}`);
+          this.select_all_input(el);
         } else {
           // this.record[curr_lan] = event.target.value;
           let next_lan = this.showned_language[index + 1].key;
-          document.getElementById(`new_word_${next_lan}`).focus();
+          let el = document.getElementById(`new_word_${next_lan}`);
+          this.select_all_input(el);
         }
       }
+    },
+    select_all_input(el) {
+      el.focus();
+      el.setSelectionRange(0, el.value.length)
     },
     hide_language(lan_en) {
       this.app_data.user.notebooks.currNotebook.languages_details[

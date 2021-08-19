@@ -88,4 +88,5 @@ export default {
   font-family: "Big Shoulders Stencil Display", Helvetica, Arial, sans-serif;
   font-weight: medium;
 }
+
 </style>

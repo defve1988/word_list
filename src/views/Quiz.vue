@@ -16,12 +16,47 @@
         >
           <v-sheet class="pt-10" height="100%" tile>
             <v-row class="pa-10" align="center" justify="center">
-              <div class="text-h3" @click="play_aduio" style="cursor: pointer">
+              <div
+                class="text-h3"
+                @click="play_aduio"
+                style="cursor: pointer"
+                v-if="quiz_type == 'Word-Word'"
+              >
                 {{ quiz_index + 1 }}. {{ question.question }}
+              </div>
+
+              <div class="text-h3" v-else>
+                {{ quiz_index + 1 }}.
+
+                <v-text-field
+                  v-if="quiz_type == 'Spell'"
+                  v-model="spell_answer"
+                  :counter="question.question.length"
+                  required
+                  height="60"
+                  class="spell_input text-h5 font-weight-light mx-2 pa-3"
+                  @keydown="key_down"
+                  :id="`spell_${question_index}`"
+                ></v-text-field>
+
+                <v-scroll-x-transition>
+                  <div
+                    v-if="show_answer"
+                    class="display-1 mx-5"
+                    align="center"
+                    :class="isCorrect ? 'correct' : 'error'"
+                  >
+                    {{ question.question }}
+                  </div>
+                </v-scroll-x-transition>
+
+                <v-btn icon class="ml-3" @click="play_aduio">
+                  <v-icon> mdi-volume-high </v-icon>
+                </v-btn>
               </div>
             </v-row>
 
-            <v-row align="center" justify="center">
+            <v-row align="center" justify="center" v-if="quiz_type != 'Spell'">
               <v-item-group>
                 <v-container>
                   <v-row
@@ -58,6 +93,13 @@
                 </v-container>
               </v-item-group>
             </v-row>
+            <v-row align-self="end" class="mt-15 px-5">
+              <v-col align-self="end" align="end" class="px-10">
+                {{ quiz_index + 1 }}/{{
+                  app_data.quiz_dialog.config.question_num
+                }}
+              </v-col>
+            </v-row>
           </v-sheet>
         </v-carousel-item>
       </v-carousel>
@@ -88,11 +130,17 @@ export default {
     colors: ["primary", "secondary", "yellow darken-2", "red", "orange"],
     quiz_index: 0,
     answer: null,
+    spell_answer: "",
+    isCorrect: true,
+    show_answer: false,
   }),
   computed: {
     ...mapState({
       app_data: "app_data",
     }),
+    quiz_type() {
+      return this.app_data.quiz_dialog.quiz_type;
+    },
     audio_src_1() {
       if (this.app_data.user.quiz.quiz_list.length == 0) return "";
       let language = this.app_data.quiz_dialog.config.question_lan;
@@ -106,9 +154,45 @@ export default {
         this.app_data.user.quiz.quiz_list[this.quiz_index].correct_answer;
       return `https://www.google.com/speech-api/v1/synthesize?text=${word}&enc=mpeg&lang=${language}&speed=0.4&client=lr-language-tts&use_google_only_voices=1`;
     },
+    currQuestion() {
+      return this.app_data.user.quiz.quiz_list[this.quiz_index];
+    },
+  },
+  watch: {
+    audio_src_1() {
+      // this means a new question is given
+      this.play_aduio();
+      if (this.quiz_type == "Spell") {
+        this.set_question_focus(0);
+      }
+    },
   },
   methods: {
     ...mapMutations([]),
+    async set_question_focus() {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      let el = document.getElementById(`spell_${this.quiz_index}`);
+      el.focus();
+    },
+
+    key_down(e) {
+      if (e.keyCode === 13) {
+        if (this.spell_answer == this.currQuestion.question) {
+          this.isCorrect = true;
+          this.app_data.user.quiz.quiz_list[this.quiz_index].correct = true;
+        } else {
+          this.isCorrect = false;
+          this.app_data.user.quiz.quiz_list[this.quiz_index].correct = false;
+        }
+        this.show_answer = true;
+        let audio2 = document.getElementById("quiz_audio_2");
+        audio2.play();
+        audio2.onended = () => {
+          this.set_next_question();
+        };
+      }
+    },
+
     quiz_config() {
       console.log(this.app_data.quiz_dialog.created);
       this.quiz_index = 0;
@@ -116,7 +200,10 @@ export default {
       this.app_data.quiz_dialog.show = true;
     },
 
-    play_aduio() {
+    async play_aduio() {
+      // todo: this is not good enough, need to check the networkstate
+      // console.log(audio1.networkState)
+      await new Promise((resolve) => setTimeout(resolve, 200));
       let audio1 = document.getElementById("quiz_audio_1");
       audio1.play();
     },
@@ -168,18 +255,35 @@ export default {
       // record result
       this.app_data.user.quiz.quiz_list[this.quiz_index].correct = isCorrect;
       // play word audio
-      if (this.app_data.quiz_dialog.play_audio) {
+      if (this.app_data.quiz_dialog.play_audio_1) {
         let audio1 = document.getElementById("quiz_audio_1");
         audio1.play();
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        let audio2 = document.getElementById("quiz_audio_2");
-        audio2.play();
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        audio1.onended = () => {
+          if (this.app_data.quiz_dialog.play_audio_2) {
+            let audio2 = document.getElementById("quiz_audio_2");
+            audio2.play();
+            audio2.onended = () => {
+              this.set_next_question();
+            };
+          }
+        };
+      } else {
+        if (this.app_data.quiz_dialog.play_audio_2) {
+          let audio2 = document.getElementById("quiz_audio_2");
+          audio2.play();
+          audio2.onended = () => {
+            this.set_next_question();
+          };
+        }
       }
-      // goto next question
-      if (!this.app_data.quiz_dialog.play_audio) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+
+      if (!this.app_data.quiz_dialog.play_audio_2) {
+        // goto next question
+        this.set_next_question();
       }
+    },
+    async set_next_question() {
+      await new Promise((resolve) => setTimeout(resolve, 500));
       if (this.quiz_index < this.app_data.quiz_dialog.config.question_num - 1) {
         this.quiz_index += 1;
       } else {
@@ -187,6 +291,8 @@ export default {
         this.app_data.quiz_dialog.created = false;
         this.app_data.quiz_res_dialog.show = true;
       }
+      this.show_answer = false;
+      this.spell_answer = "";
     },
   },
 };
