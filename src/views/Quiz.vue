@@ -14,92 +14,102 @@
           v-for="(question, question_index) in app_data.user.quiz.quiz_list"
           :key="question_index"
         >
-          <v-sheet class="pt-10" height="100%" tile>
-            <v-row class="pa-10" align="center" justify="center">
-              <div
-                class="text-h3"
-                @click="play_aduio"
-                style="cursor: pointer"
-                v-if="quiz_type == 'Word-Word'"
+          <v-sheet class="pt-0" height="100%" tile>
+            <v-container fill-height fluid>
+              <!-- <v-row class="ma-0 pt-2 px-2">
+                <v-col align-self="end" align="end" class="ma-0 pa-0 px-2">
+                  {{ quiz_index + 1 }}/{{
+                    app_data.quiz_dialog.config.question_num
+                  }}
+                </v-col>
+              </v-row> -->
+
+              <v-row class="pa-5 pb-0" align-self="center" justify="center">
+                <div
+                  class="text-h3"
+                  @click="play_aduio"
+                  style="cursor: pointer"
+                  v-if="quiz_type == 'Word-Word'"
+                >
+                  {{ quiz_index + 1 }}. {{ question.question }}
+                </div>
+
+                <div class="text-h3" v-else>
+                  {{ quiz_index + 1 }}.
+
+                  <v-text-field
+                    v-if="quiz_type == 'Spell'"
+                    v-model="spell_answer"
+                    :counter="question.question.length"
+                    required
+                    height="60"
+                    class="spell_input text-h5 font-weight-light mx-2 pa-3"
+                    @keydown="key_down"
+                    :id="`spell_${question_index}`"
+                  ></v-text-field>
+
+                  <v-scroll-x-transition>
+                    <div
+                      v-if="show_answer"
+                      class="display-1 mx-5"
+                      align="center"
+                      :class="isCorrect ? 'correct' : 'error'"
+                    >
+                      {{ question.question }}
+                    </div>
+                  </v-scroll-x-transition>
+
+                  <v-btn icon class="ml-3" @click="play_aduio">
+                    <v-icon> mdi-volume-high </v-icon>
+                  </v-btn>
+                </div>
+              </v-row>
+
+              <v-row
+                align="start"
+                 align-self="start"
+                justify="center"
+                v-if="quiz_type != 'Spell'"
               >
-                {{ quiz_index + 1 }}. {{ question.question }}
-              </div>
-
-              <div class="text-h3" v-else>
-                {{ quiz_index + 1 }}.
-
-                <v-text-field
-                  v-if="quiz_type == 'Spell'"
-                  v-model="spell_answer"
-                  :counter="question.question.length"
-                  required
-                  height="60"
-                  class="spell_input text-h5 font-weight-light mx-2 pa-3"
-                  @keydown="key_down"
-                  :id="`spell_${question_index}`"
-                ></v-text-field>
-
-                <v-scroll-x-transition>
-                  <div
-                    v-if="show_answer"
-                    class="display-1 mx-5"
-                    align="center"
-                    :class="isCorrect ? 'correct' : 'error'"
-                  >
-                    {{ question.question }}
-                  </div>
-                </v-scroll-x-transition>
-
-                <v-btn icon class="ml-3" @click="play_aduio">
-                  <v-icon> mdi-volume-high </v-icon>
-                </v-btn>
-              </div>
-            </v-row>
-
-            <v-row align="center" justify="center" v-if="quiz_type != 'Spell'">
-              <v-item-group>
-                <v-container>
-                  <v-row
-                    v-for="(choice, index_choice) in question.choice"
-                    :key="index_choice"
-                    justify="center"
-                    class="my-1"
-                  >
-                    <v-item>
-                      <v-card flat @click="next_question(index_choice)">
-                        <v-scroll-x-transition>
-                          <div
-                            class="text-h4 font-weight-light text-center pa-2"
-                            :class="`choice_${index_choice}`"
-                          >
-                            {{ choice.text }}
-                            <v-icon
-                              style="color: green"
-                              v-if="choice.isCorrect == true"
+                <v-item-group>
+                  <v-container>
+                    <v-row
+                      v-for="(choice, index_choice) in question.choice"
+                      :key="index_choice"
+                      justify="center"
+                    >
+                      <v-item>
+                        <v-card flat @click="next_question(index_choice)">
+                          <v-scroll-x-transition>
+                            <div
+                              class="text-h4 font-weight-light text-center pa-2"
+                              :class="`choice_${index_choice}`"
                             >
-                              mdi-check
-                            </v-icon>
-                            <v-icon
-                              style="color: red"
-                              v-else-if="choice.isCorrect == false"
-                            >
-                              mdi-close
-                            </v-icon>
-                          </div>
-                        </v-scroll-x-transition>
-                      </v-card>
-                    </v-item>
-                  </v-row>
-                </v-container>
-              </v-item-group>
-            </v-row>
-            <v-row align-self="end" class="mt-15 px-5">
-              <v-col align-self="end" align="end" class="px-10">
-                {{ quiz_index + 1 }}/{{
-                  app_data.quiz_dialog.config.question_num
-                }}
-              </v-col>
-            </v-row>
+                              {{ choice.text }}
+                              <v-icon
+                                style="color: green"
+                                v-if="choice.isCorrect == true"
+                              >
+                                mdi-check
+                              </v-icon>
+                              <v-icon
+                                style="color: red"
+                                v-else-if="choice.isCorrect == false"
+                              >
+                                mdi-close
+                              </v-icon>
+                            </div>
+                          </v-scroll-x-transition>
+                        </v-card>
+                      </v-item>
+                    </v-row>
+                  </v-container>
+                </v-item-group>
+              </v-row>
+              <v-row>
+                <v-spacer></v-spacer>
+              </v-row>
+            </v-container>
           </v-sheet>
         </v-carousel-item>
       </v-carousel>

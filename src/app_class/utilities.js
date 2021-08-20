@@ -3,6 +3,22 @@ import firebase from "firebase/app";
 import world_language from "@/app_class/languages"
 import _ from "underscore"
 
+
+// usage
+// let audio = new Audio('url')
+// await utilities.playAudio(audio);
+
+function playAudio(audio){
+   return new Promise(res=>{
+     audio.play()
+     audio.onended = res
+   })
+ }
+
+function wait(ms) {
+   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function en2display(languages) {
    // note: utf-8 space is "\xa0"
    return _.map(languages, (lan) => {
@@ -139,7 +155,11 @@ function handle_redundant_route(err) {
    }
 }
 
+// todo: change all audios to simple audio play
+
 export default {
+   playAudio,
+   wait,
    en2display,
    display2key,
    lan2key,

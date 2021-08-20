@@ -1,9 +1,17 @@
 <template>
   <v-container>
     <ControlBar />
-    <WordTableList v-if="app_data.word_table_view=='list'" />
-    <WordTableGrid v-if="app_data.word_table_view=='grid'" />
-    <WordTableCard v-if="app_data.word_table_view=='flash_card'" />
+    <WordTableList v-if="app_data.word_table_view == 'list'" />
+    <WordTableGrid v-if="app_data.word_table_view == 'grid'" />
+    <WordTableCard v-if="app_data.word_table_view == 'flash_card'" />
+    <v-row v-if="app_data.word_table_view == 'grid'">
+      <v-spacer> </v-spacer>
+      <v-col class="mr-10" cols="2">
+        <pre class="overline" style="text-align: start">
+          Shuffle: Enter
+    </pre>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

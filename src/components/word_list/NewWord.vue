@@ -62,6 +62,7 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 import _ from "underscore";
+import utilities from "@/app_class/utilities";
 
 export default {
   name: "new_word",
@@ -104,6 +105,9 @@ export default {
   }),
   methods: {
     ...mapMutations([]),
+    get_src(word, key) {
+      return `https://www.google.com/speech-api/v1/synthesize?text=${word}&enc=mpeg&lang=${key}&speed=0.4&client=lr-language-tts&use_google_only_voices=1`;
+    },
     async key_down(event) {
       this.app_data.word_list_loaded = true;
       if (event.keyCode === 13) {
@@ -130,6 +134,16 @@ export default {
             await this.app_data.user.notebooks.currNotebook.add_record(
               this.record
             );
+            for (var i = 0; i < this.showned_language.length; i++) {
+              let lan_key = this.showned_language[i].key;
+              if (i==0){
+                await utilities.wait(500)
+              }
+              let audio = new Audio(
+                this.get_src(this.record[lan_key], lan_key)
+              );
+              await utilities.playAudio(audio);
+            }
           } else {
             console.log("Duplicated word " + duplicated);
           }
@@ -148,7 +162,7 @@ export default {
     },
     select_all_input(el) {
       el.focus();
-      el.setSelectionRange(0, el.value.length)
+      el.setSelectionRange(0, el.value.length);
     },
     hide_language(lan_en) {
       this.app_data.user.notebooks.currNotebook.languages_details[

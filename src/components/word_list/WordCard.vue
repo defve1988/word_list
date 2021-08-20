@@ -33,11 +33,11 @@
       <transition name="flip">
         <v-card-text style="text-align: center" v-bind:key="hover">
           <div v-if="!hover">
-            {{ word[front_language] }}
+            {{ word[front_key] }}
           </div>
 
           <div v-else>
-            {{ word[back_language] }}
+            {{ word[back_key] }}
           </div>
         </v-card-text>
       </transition>
@@ -69,43 +69,43 @@ export default {
     ...mapState({
       app_data: "app_data",
     }),
-    front_language() {
-      let show_lan = _.filter(
-        this.app_data.user.notebooks.currNotebook.languages,
-        (l) => {
-          return this.app_data.user.notebooks.currNotebook.languages_details[l]
-            .show;
-        }
-      );
-      let lan = show_lan[0];
-      return this.app_data.user.notebooks.currNotebook.languages_details[lan]
-        .key;
+    languages() {
+      let res = [];
+      this.app_data.user.notebooks.currNotebook.languages.forEach((lan) => {
+        res.push(
+          this.app_data.user.notebooks.currNotebook.languages_details[lan]
+        );
+      });
+      return res;
     },
-    back_language() {
-      let show_lan = _.filter(
-        this.app_data.user.notebooks.currNotebook.languages,
-        (l) => {
-          return this.app_data.user.notebooks.currNotebook.languages_details[l]
-            .show;
-        }
-      );
-      let lan = show_lan[1];
-      return this.app_data.user.notebooks.currNotebook.languages_details[lan]
-        .key;
+
+    front_key() {
+      if (this.app_data.card_front == null) {
+        return this.languages[1].key;
+      } else {
+        return this.app_data.card_front.key;
+      }
+    },
+    back_key() {
+      if (this.app_data.card_back == null) {
+        return this.languages[0].key;
+      } else {
+        return this.app_data.card_back.key;
+      }
     },
     audio_src_front() {
       return `https://www.google.com/speech-api/v1/synthesize?text=${
-        this.word[this.front_language]
+        this.word[this.front_key]
       }&enc=mpeg&lang=${
-        this.front_language
+        this.front_key
       }&speed=0.4&client=lr-language-tts&use_google_only_voices=1`;
     },
 
     audio_src_back() {
       return `https://www.google.com/speech-api/v1/synthesize?text=${
-        this.word[this.back_language]
+        this.word[this.back_key]
       }&enc=mpeg&lang=${
-        this.back_language
+        this.back_key
       }&speed=0.4&client=lr-language-tts&use_google_only_voices=1`;
     },
   },
@@ -154,14 +154,12 @@ export default {
         });
     },
     play() {
-      document.getElementById(`audio_front_${this.word.id}`).play();
-      setTimeout(
-        function (id) {
-          document.getElementById(`audio_back_${id}`).play();
-        },
-        1000,
-        this.word.id
-      );
+      let audio_1 = document.getElementById(`audio_front_${this.word.id}`);
+      audio_1.play();
+      audio_1.onended = () => {
+        let audio_2 = document.getElementById(`audio_back_${this.word.id}`);
+        audio_2.play();
+      };
     },
   },
 };

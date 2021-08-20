@@ -102,8 +102,9 @@
       </v-btn>
     </template>
 
-    <NewWord v-if="app_data.word_table_view!='flash_card'"/>
-    <CardConfig v-if="app_data.word_table_view=='flash_card'"/>
+    <NewWord v-if="app_data.word_table_view == 'list'" />
+    <CardConfig v-if="app_data.word_table_view == 'flash_card'" />
+    <CardConfig v-if="app_data.word_table_view == 'grid'" />
     <v-file-input
       id="file-input"
       type="file"
@@ -122,6 +123,9 @@ import { mapState, mapMutations } from "vuex";
 
 export default {
   name: "Words",
+  mounted() {
+    document.addEventListener("keypress", this.key_pressed);
+  },
   data: () => ({
     buttons: [
       {
@@ -155,6 +159,11 @@ export default {
   },
   methods: {
     ...mapMutations([]),
+    key_pressed(e) {
+      // console.log(e.keyCode);
+      if (e.keyCode == 13 && this.app_data.word_table_view == "grid")
+        this.sort_list({ title: "Random", ascending: true });
+    },
     filter_list(item) {
       this.app_data.word_list_loaded = true;
       this.app_data.word_grid_loaded = true;

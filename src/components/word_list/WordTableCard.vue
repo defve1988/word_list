@@ -78,8 +78,6 @@
     play audio: space 
     filp card:           F
     previou/next: A/W
-    <!-- Press enter: add to master.
-    Press G: add to favorite. -->
     </pre>
       </v-col>
     </v-row>
@@ -107,11 +105,15 @@ export default {
   mounted() {
     document.addEventListener("keypress", this.key_pressed);
   },
+  watch:{
+    card_audio_src(){
+      this.play_aduio()
+    }
+  },
   computed: {
     ...mapState({
       app_data: "app_data",
     }),
-
     word() {
       return this.app_data.user.notebooks.currNotebook.word_list[
         this.card_index
@@ -169,7 +171,8 @@ export default {
       }
     },
     play_aduio() {
-      document.getElementById("card_audio").play();
+      let el = document.getElementById("card_audio")
+      setTimeout(el=>{el.play()}, 200, el)
     },
     add_favorite() {
       this.app_data.user.notebooks.currNotebook

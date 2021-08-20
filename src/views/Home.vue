@@ -41,7 +41,7 @@ export default {
 
       for (var i = 0; i < word.length; i++) {
         let word_defination = await fetch(
-          `http://api.wordnik.com/v4/word.json/${word[i].word}/definitions?limit=200&includeRelated=false&useCanonical=false&includeTags=false&api_key=${api_key}`
+          `https://api.wordnik.com/v4/word.json/${word[i].word}/definitions?limit=200&includeRelated=false&useCanonical=false&includeTags=false&api_key=${api_key}`
         );
         let word_example = await fetch(
           `https://api.wordnik.com/v4/word.json/${word[i].word}/examples?includeDuplicates=false&useCanonical=false&limit=3&api_key=${api_key}`

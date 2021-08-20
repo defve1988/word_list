@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background: #eeee">
+  <v-app>
     <v-app-bar app color="primary" dark clipped-left flat loading>
       <v-app-bar-nav-icon
         @click="app_data.mini_drawer = !app_data.mini_drawer"

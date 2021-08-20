@@ -20,6 +20,8 @@ firebase.auth().onAuthStateChanged(() => {
 
 const state = {
 
+
+   dark_theme:false,
    dev_test: true,
    // test: new Test(),
 
