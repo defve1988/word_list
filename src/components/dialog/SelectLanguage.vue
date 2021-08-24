@@ -15,7 +15,6 @@
             <v-list-item
               :key="`item-${i}`"
               :value="item"
-              active-class="deep-purple--text text--accent-4"
             >
               <template v-slot:default="{ active }">
                 <v-img
@@ -34,7 +33,6 @@
                 <v-list-item-action>
                   <v-checkbox
                     :input-value="active"
-                    color="deep-purple accent-4"
                   ></v-checkbox>
                 </v-list-item-action>
               </template>

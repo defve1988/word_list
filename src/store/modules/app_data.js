@@ -35,9 +35,9 @@ const state = {
 
    theme: theme_default,
 
-   theme_color: {
+   theme_color: {},
 
-   },
+   notebook_view: "card",
 
    dev_test: true,
    // test: new Test(),

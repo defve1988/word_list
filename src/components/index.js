@@ -7,6 +7,9 @@ import SelectLanguage from './dialog/SelectLanguage.vue'
 import QuizConfigure from './dialog/QuizConfigure.vue'
 import QuizRes from './dialog/QuizRes.vue'
 
+import NoteBookCard from './notebook/NoteBookCard.vue'
+import NoteBookList from './notebook/NoteBookList.vue'
+
 import RowHeader from './word_list/RowHeader.vue'
 import Notes from './word_list/Notes.vue'
 import NewWord from './word_list/NewWord.vue'
@@ -19,6 +22,8 @@ import WordTableCard from './word_list/WordTableCard.vue'
 import FlashCard from './word_list/FlashCard.vue'
 import ControlBar from './word_list/control_bar.vue'
 import WordCard from './word_list/WordCard.vue'
+
+import draggable from "vuedraggable";
 
 
 const installObj = {
@@ -46,6 +51,13 @@ const installObj = {
     Vue.component('FlashCard', FlashCard)
     Vue.component('ControlBar', ControlBar)
     Vue.component('WordCard', WordCard)
+
+    // notebook view
+    Vue.component('NoteBookCard', NoteBookCard)
+    Vue.component('NoteBookList', NoteBookList)
+
+
+    Vue.component('draggable', draggable)
 
   }
 }

@@ -11,6 +11,18 @@ You can change app setting here.
 
     <v-row>
       <v-col>
+        <span :style="`color:${app_data.theme_color.content}`"> NoteBook </span>
+        <v-switch
+          @click="change_notebook_view"
+          :label="app_data.notebook_view == 'card' ? 'Card View' : 'List View'"
+          :dark="app_data.theme.brightness <= 50"
+          inset
+        ></v-switch>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
         <v-checkbox
           v-model="app_data.theme.dark"
           @click="change_theme"
@@ -105,6 +117,12 @@ export default {
       if (this.app_data.theme.dark) this.app_data.theme.brightness = 10;
       if (!this.app_data.theme.dark) this.app_data.theme.brightness = 90;
       await this.SET_THEME();
+    },
+    change_notebook_view() {
+      if (this.app_data.notebook_view == "card")
+        this.app_data.notebook_view = "list";
+      else if (this.app_data.notebook_view == "list")
+        this.app_data.notebook_view = "card";
     },
   },
 };

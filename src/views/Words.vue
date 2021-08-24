@@ -1,5 +1,12 @@
 <template>
   <v-container>
+    <v-row>
+      <v-col>
+        <span class="overline mx-5" :style="`color:${app_data.theme_color.content}`">
+          Notebook: {{ app_data.user.notebooks.currNotebook.notebook_name }}
+        </span>
+      </v-col>
+    </v-row>
     <ControlBar />
     <WordTableList v-if="app_data.word_table_view == 'list'" />
     <WordTableGrid v-if="app_data.word_table_view == 'grid'" />

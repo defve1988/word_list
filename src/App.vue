@@ -53,7 +53,7 @@ export default {
   },
 
   async mounted() {
-    await this.SET_THEME()
+    await this.SET_THEME();
   },
 
   // async mounted() {
