@@ -1,8 +1,13 @@
 <template>
   <v-dialog v-model="app_data.select_language_dialog" width="500" persistent>
     <v-system-bar class="primary" dark> Select languages </v-system-bar>
-    <v-card :loading="isloading">
-      <v-list shaped dense>
+    <v-card :loading="isloading" :color="app_data.theme_color.app_bg">
+      <v-list
+        shaped
+        dense
+        :color="app_data.theme_color.app_bg"
+        :dark="app_data.theme.brightness <= 50"
+      >
         <v-list-item-group v-model="select_language" multiple>
           <template
             v-for="(item, i) in Object.keys(app_data.world_language).sort()"
@@ -40,7 +45,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
-          color="warning"
+          color="error"
           class="mr-2"
           @click="app_data.select_language_dialog = false"
         >

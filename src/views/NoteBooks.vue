@@ -1,30 +1,24 @@
 <template>
   <v-container>
     <v-row>
-      <v-col lg="4" md="6" align="center">
+      <v-col lg="3" md="6" align="center">
         <v-hover v-slot="{ hover }">
           <v-card
             height="200"
-            class="
-              d-flex
-              flex-column
-              align-center
-              justify-center
-              grey
-              lighten-2
-            "
+            class="d-flex flex-column align-center justify-center lighten-2"
+            :color="app_data.theme_color.card_bg"
             style="cursor: pointer"
             :elevation="hover ? 6 : 2"
             @click="new_notebook"
           >
             <v-card-text align-self="center">
-              <v-icon size="80"> mdi-plus </v-icon>
+              <v-icon size="80" :color="app_data.theme_color.content"> mdi-plus </v-icon>
             </v-card-text>
           </v-card>
         </v-hover>
       </v-col>
 
-      <v-col lg="4" md="6" v-for="(notebook, index) in noteBooks" :key="index">
+      <v-col lg="3" md="6" v-for="(notebook, index) in noteBooks" :key="index">
         <v-hover v-slot="{ hover }">
           <v-card
             height="200"
@@ -34,9 +28,9 @@
               flex-column
               align-center
               justify-center
-              grey
               lighten-2
             "
+            :color="app_data.theme_color.card_bg"
             @click="open_notebook(notebook.id)"
           >
             <v-card-text>
@@ -53,20 +47,23 @@
               </v-row>
             </v-card-text>
             <v-card-title
-              class="title text-uppercase grey--text text--darken-2"
+              class="title text-uppercase"
+              :style="`color:${app_data.theme_color.content}`"
               :id="'notebook_' + notebook.id"
               @blur="lose_focus"
             >
               {{ notebook.notebook_name }}
             </v-card-title>
             <v-card-actions>
-              <v-btn icon @click="open_notebook(notebook.id)">
+              <v-btn icon @click="open_notebook(notebook.id)"
+              :color="app_data.theme_color.content">
                 <v-icon> mdi-book-open-page-variant </v-icon>
               </v-btn>
               <v-btn
                 icon
                 @click="edit_notebook_name(notebook.id)"
                 @click.native.stop
+                :color="app_data.theme_color.content"
               >
                 <v-icon> mdi-pencil </v-icon>
               </v-btn>
@@ -74,10 +71,12 @@
                 icon
                 @click="edit_notebook_languages(notebook.id)"
                 @click.native.stop
+                :color="app_data.theme_color.content"
               >
                 <v-icon> mdi-translate </v-icon>
               </v-btn>
-              <v-btn icon @click="del_notebook(notebook.id)" @click.native.stop>
+              <v-btn icon @click="del_notebook(notebook.id)" @click.native.stop
+              :color="app_data.theme_color.content">
                 <v-icon> mdi-delete </v-icon>
               </v-btn>
             </v-card-actions>
@@ -99,8 +98,8 @@ export default {
     ...mapState({
       app_data: "app_data",
     }),
-    noteBooks(){
-      return this.app_data.notebook_info
+    noteBooks() {
+      return this.app_data.notebook_info;
     },
   },
   watch: {},

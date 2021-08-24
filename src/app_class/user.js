@@ -92,8 +92,17 @@ export default class User {
       return this.auth.user == null ? null : this.auth.user.photoURL
    }
 
+   // async theme(){
+   //    let res = await this.auth.user_ref.collection("theme").get()
+   //    // if (res.data().theme==undefined){
+
+   //    // }
+   //    return res
+   // }
+
    get_noteBooks(notebook_id = null) {
       if (this.notebooks.user_ref == null) return null
+
       if (notebook_id == null) {
          return this.notebooks.noteBooks.map(id => {
             return {
@@ -112,9 +121,8 @@ export default class User {
    }
 
    async init_quiz(notebook_id, config) {
-      await this.notebooks.switch_notebook(notebook_id),
-         await this.quiz.init(this.notebooks.currNotebook, config)
-      return Promise.resolve()
+      await this.notebooks.switch_notebook(notebook_id)
+      return await this.quiz.init(this.notebooks.currNotebook, config)
    }
 
 }

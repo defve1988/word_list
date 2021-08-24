@@ -1,14 +1,18 @@
 <template>
   <v-dialog v-model="app_data.quiz_res_dialog.show" width="500" persistent>
     <v-system-bar class="primary" dark> Quiz Result </v-system-bar>
-    <v-card>
+    <v-card :color="app_data.theme_color.app_bg">
       <v-list
         v-for="(question, index) of app_data.user.quiz.quiz_list"
         :key="index"
         class="mx-3 py-0"
         dense
+        :color="app_data.theme_color.app_bg"
       >
-        <v-row class="ma-0 record-row">
+        <v-row
+          class="ma-0 record-row"
+          :style="`border-color:${app_data.theme_color.content}`"
+        >
           <v-col cols="4" align-self="center" align="center" class="px-0">
             <OneWord
               :word="question.question"
@@ -35,7 +39,7 @@
       </v-list>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="warning" class="mr-2" @click="discard_res">
+        <v-btn color="error" class="mr-2" @click="discard_res">
           Discard
         </v-btn>
         <v-btn color="primary" class="mr-2" @click="confirm"> Save </v-btn>
@@ -59,7 +63,7 @@ export default {
   watch: {},
   methods: {
     async confirm() {
-      await this.app_data.user.quiz.summary()
+      await this.app_data.user.quiz.summary();
       this.app_data.quiz_res_dialog.show = false;
     },
 

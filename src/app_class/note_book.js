@@ -246,6 +246,18 @@ export default class NoteBook {
          case "random":
             this.word_list = _.shuffle(this.word_list);
             break;
+         case "alphabet":
+            // console.log(sort_type, ascending)
+            var show_language = []
+            this.languages.forEach(l => {
+               if (this.languages_details[l].show) {
+                  show_language.push(this.languages_details[l])
+               }
+            })
+            var lan = show_language[0].key
+
+            this.word_list = _.sortBy(this.word_list, lan)
+            break;
          case "date":
             this.word_list = _.sortBy(this.word_list, 'createdAt')
             break;

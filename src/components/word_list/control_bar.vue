@@ -16,6 +16,8 @@
             small
             v-bind="attrs"
             v-on="on"
+            :color="app_data.theme_color.content"
+            :dark="app_data.theme.brightness <= 50"
           >
             {{ btn.text }}
             <v-icon class="pl-2" small>
@@ -24,7 +26,7 @@
           </v-btn>
         </template>
 
-        <v-list>
+        <v-list :dark="app_data.theme.brightness <= 50">
           <v-list-item-group>
             <v-list-item v-for="(item, index) in filters" :key="index" dense>
               <v-list-item-action class="mr-2">
@@ -34,7 +36,10 @@
                 ></v-checkbox>
               </v-list-item-action>
 
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
+              <v-list-item-title
+                :style="`color:${app_data.theme_color.content}`"
+                >{{ item.title }}</v-list-item-title
+              >
             </v-list-item>
           </v-list-item-group>
         </v-list>
@@ -55,6 +60,8 @@
             small
             v-bind="attrs"
             v-on="on"
+            :color="app_data.theme_color.content"
+            :dark="app_data.theme.brightness <= 50"
           >
             {{ btn.text }}
             <v-icon class="pl-2" small>
@@ -62,7 +69,7 @@
             </v-icon>
           </v-btn>
         </template>
-        <v-list>
+        <v-list :dark="app_data.theme.brightness <= 50">
           <v-list-item-group>
             <v-list-item
               v-for="(item, index) in sorts"
@@ -70,16 +77,14 @@
               dense
               @click="sort_list(item)"
             >
-              <v-icon v-if="item.title == 'Random'" class="mr-2">
-                mdi-shuffle-variant
-              </v-icon>
-              <v-icon v-else class="mr-2">
-                {{
-                  item.ascending ? "mdi-sort-ascending" : "mdi-sort-descending"
-                }}
+              <v-icon class="mr-2" :color="app_data.theme_color.content">
+                {{ item.ascending ? item.icons[0] : item.icons[1] }}
               </v-icon>
 
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
+              <v-list-item-title
+                :style="`color:${app_data.theme_color.content}`"
+                >{{ item.title }}</v-list-item-title
+              >
             </v-list-item>
           </v-list-item-group>
         </v-list>
@@ -94,6 +99,8 @@
         dense
         small
         @click="run_func(btn.func)"
+                    :color="app_data.theme_color.content"
+            :dark="app_data.theme.brightness <= 50"
       >
         {{ btn.text }}
         <v-icon class="pl-2" small>
@@ -146,10 +153,34 @@ export default {
       { title: "Notes", selected: true },
     ],
     sorts: [
-      { title: "Random", ascending: true },
-      { title: "Date", ascending: true },
-      { title: "Error rate", ascending: true },
-      { title: "Type", ascending: false },
+      {
+        title: "Random",
+        ascending: true,
+        icons: ["mdi-shuffle-variant", "mdi-shuffle-variant"],
+      },
+      {
+        title: "Alphabet",
+        ascending: true,
+        icons: [
+          "mdi-sort-alphabetical-ascending",
+          "mdi-sort-alphabetical-descending",
+        ],
+      },
+      {
+        title: "Date",
+        ascending: true,
+        icons: ["mdi-sort-calendar-ascending", "mdi-sort-calendar-descending"],
+      },
+      {
+        title: "Error rate",
+        ascending: true,
+        icons: ["mdi-sort-ascending", "mdi-sort-descending"],
+      },
+      {
+        title: "Type",
+        ascending: false,
+        icons: ["mdi-sort-bool-ascending", "mdi-sort-bool-descending"],
+      },
     ],
   }),
   computed: {

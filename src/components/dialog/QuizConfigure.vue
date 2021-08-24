@@ -1,8 +1,13 @@
 <template>
   <v-dialog v-model="app_data.quiz_dialog.show" width="500" persistent>
     <v-system-bar class="primary" dark> Start a new quiz </v-system-bar>
-    <v-card>
-      <v-list shaped dense>
+    <v-card :color="app_data.theme_color.app_bg">
+      <v-list
+        shaped
+        dense
+        :color="app_data.theme_color.app_bg"
+        :dark="app_data.theme.brightness <= 50"
+      >
         <v-list-item class="mt-3">
           <v-combobox
             v-model="selected_quiz_type"
@@ -62,6 +67,7 @@
             max="50"
             ticks
             label="Question number"
+            :color="app_data.theme_color.content"
           ></v-slider>
         </v-list-item>
 
@@ -74,6 +80,7 @@
             max="6"
             ticks
             label="Choice number"
+            :color="app_data.theme_color.content"
           ></v-slider>
         </v-list-item>
 
@@ -179,9 +186,14 @@ export default {
         this.app_data.quiz_dialog.config.choice_num = 0;
       }
 
-      await this.app_data.user.init_quiz(id, this.app_data.quiz_dialog.config);
-      this.app_data.quiz_dialog.created = true;
-      this.app_data.quiz_dialog.show = false;
+      let created = await this.app_data.user.init_quiz(
+        id,
+        this.app_data.quiz_dialog.config
+      );
+      if (created) {
+        this.app_data.quiz_dialog.created = true;
+        this.app_data.quiz_dialog.show = false;
+      }
     },
   },
 };

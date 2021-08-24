@@ -6,6 +6,9 @@
         :items="languages"
         :item-text="lan_display"
         label="Card Front"
+        :dark="app_data.theme.brightness <= 50"
+        :background-color="`${app_data.theme_color.app_bg}`"
+        :item-color="`${app_data.theme_color.content}`"
       ></v-combobox>
     </v-col>
 
@@ -15,6 +18,10 @@
         :items="languages"
         :item-text="lan_display"
         label="Card Back"
+        :style="`color:${app_data.theme_color.content}`"
+        :dark="app_data.theme.brightness <= 50"
+        :background-color="`${app_data.theme_color.app_bg}`"
+        :item-color="`${app_data.theme_color.content}`"
       ></v-combobox>
     </v-col>
   </v-row>
@@ -63,7 +70,7 @@ export default {
         }
       },
       set(val) {
-        console.log(val)
+        console.log(val);
         this.app_data.card_back = val;
       },
     },

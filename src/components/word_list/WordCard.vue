@@ -6,6 +6,8 @@
       :class="app_data.word_grid_loaded ? '' : 'enter_row'"
       :style="`animation-delay:${index * delay_ratio}ms;`"
       @click="play"
+      :color="app_data.theme_color.card_bg"
+      :dark="app_data.theme.brightness <= 50"
     >
       <div style="flex: 1" class="d-flex justify-end">
         <v-btn
@@ -15,6 +17,7 @@
           :class="word.favorite ? 'favorite' : ''"
           @click="add_favorite"
           @click.native.stop
+          :style="`color:${app_data.theme_color.content}`"
         >
           <v-icon x-small> mdi-heart </v-icon>
         </v-btn>
@@ -26,12 +29,17 @@
           :class="word.mastered ? 'mastered' : ''"
           @click="add_mastered"
           @click.native.stop
+          :style="`color:${app_data.theme_color.content}`"
         >
           <v-icon x-small> mdi-check-bold </v-icon>
         </v-btn>
       </div>
       <transition name="flip">
-        <v-card-text style="text-align: center" v-bind:key="hover">
+        <v-card-text
+          style="text-align: center"
+          v-bind:key="hover"
+          :style="`color:${app_data.theme_color.content}`"
+        >
           <div v-if="!hover">
             {{ word[front_key] }}
           </div>

@@ -7,9 +7,14 @@
     <v-row v-if="app_data.word_table_view == 'grid'">
       <v-spacer> </v-spacer>
       <v-col class="mr-10" cols="2">
-        <pre class="overline" style="text-align: start">
+        <pre
+          class="overline"
+          style="text-align: start"
+          :style="`color:${app_data.theme_color.content}`"
+        >
           Shuffle: Enter
-    </pre>
+    </pre
+        >
       </v-col>
     </v-row>
   </v-container>

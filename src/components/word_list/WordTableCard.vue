@@ -11,14 +11,35 @@
           <v-row align-self="center" justify="center">
             <v-col justify="center" cols="10">
               <transition name="flip">
-                <v-card class="text-h3" height="400" v-bind:key="flipped">
+                <v-card
+                  class="text-h3"
+                  height="400"
+                  v-bind:key="flipped"
+                  :color="app_data.theme_color.card_bg"
+                  :dark="app_data.theme.brightness <= 50"
+                >
                   <v-card-actions>
                     <v-spacer></v-spacer>
+
+                    <v-btn
+                      icon
+                      class="ma-0 pa-0 ml-1"
+                      @click="hide_text = !hide_text"
+                      @click.native.stop
+                      :color="app_data.theme_color.content"
+                      :dark="app_data.theme.brightness <= 50"
+                    >
+                      <v-icon v-if="!hide_text">mdi-format-clear</v-icon>
+                      <v-icon v-else>mdi-format-text</v-icon>
+                    </v-btn>
+
                     <v-btn
                       icon
                       class="ma-0 pa-0 ml-1"
                       @click="play_aduio"
                       @click.native.stop
+                      :color="app_data.theme_color.content"
+                      :dark="app_data.theme.brightness <= 50"
                     >
                       <v-icon>mdi-volume-high</v-icon>
                     </v-btn>
@@ -28,6 +49,8 @@
                       class="ma-0 pa-0 ml-1"
                       @click="flipped = !flipped"
                       @click.native.stop
+                      :color="app_data.theme_color.content"
+                      :dark="app_data.theme.brightness <= 50"
                     >
                       <v-icon>mdi-sync </v-icon>
                     </v-btn>
@@ -38,6 +61,8 @@
                       :class="word.favorite ? 'favorite' : ''"
                       @click="add_favorite"
                       @click.native.stop
+                      :color="app_data.theme_color.content"
+                      :dark="app_data.theme.brightness <= 50"
                     >
                       <v-icon> mdi-heart </v-icon>
                     </v-btn>
@@ -48,22 +73,37 @@
                       :class="word.mastered ? 'mastered' : ''"
                       @click="add_mastered"
                       @click.native.stop
+                      :color="app_data.theme_color.content"
+                      :dark="app_data.theme.brightness <= 50"
                     >
                       <v-icon> mdi-check-bold </v-icon>
                     </v-btn>
                   </v-card-actions>
-                  <v-container style="height: 300px" fill-height>
-                    <v-row align-self="center">
-                      <v-col align="center">
-                        <div v-if="!flipped" class="display-1">
-                          {{ word[front_key] }}
-                        </div>
-                        <div v-else class="display-1">
-                          {{ word[back_key] }}
-                        </div>
-                      </v-col>
-                    </v-row>
-                  </v-container>
+                  <v-hover v-slot="{ hover }">
+                    <v-container style="height: 300px" fill-height>
+                      <v-row align-self="center">
+                        <v-col align="center">
+                          <div class="display-1" :style="`color:${app_data.theme_color.content}`">
+                            <span
+                              v-if="
+                                (!flipped && !hide_text) || (!flipped && hover)
+                              "
+                            >
+                              {{ word[front_key] }}
+                            </span>
+
+                            <span
+                              v-else-if="
+                                (flipped && !hide_text) || (flipped && hover)
+                              "
+                            >
+                              {{ word[back_key] }}
+                            </span>
+                          </div>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-hover>
                 </v-card>
               </transition>
             </v-col>
@@ -74,11 +114,17 @@
     <v-row>
       <v-spacer> </v-spacer>
       <v-col class="mr-10" cols="2">
-        <pre class="overline" style="text-align: start">
+        <pre
+          class="overline"
+          style="text-align: start"
+          :style="`color:${app_data.theme_color.content}`"
+        >
     play audio: space 
     filp card:           F
+    Hide text:           E
     previou/next: A/W
-    </pre>
+    </pre
+        >
       </v-col>
     </v-row>
 
@@ -101,14 +147,15 @@ export default {
   data: () => ({
     card_index: 0,
     flipped: false,
+    hide_text: false,
   }),
   mounted() {
     document.addEventListener("keypress", this.key_pressed);
   },
-  watch:{
-    card_audio_src(){
-      this.play_aduio()
-    }
+  watch: {
+    card_audio_src() {
+      this.play_aduio();
+    },
   },
   computed: {
     ...mapState({
@@ -156,23 +203,30 @@ export default {
   methods: {
     ...mapMutations([]),
     key_pressed(e) {
-      // console.log(e.keyCode);
-      if (e.keyCode == 32) this.play_aduio();
-      if (e.keyCode == 102) this.flipped = !this.flipped;
+      // console.log(e);
+      if (e.code == "Space") this.play_aduio();
+      if (e.code == "KeyE") this.hide_text = !this.hide_text;
+      if (e.code == "KeyF") this.flipped = !this.flipped;
       // if (e.keyCode == 103) this.add_favorite();
       // if (e.keyCode == 13) this.add_mastered();
-      if (e.keyCode == 100) {
+      if (e.code == "KeyD") {
         this.card_index += 1;
         if (this.card_index > this.word_list.length - 1) this.card_index = 0;
       }
-      if (e.keyCode == 97) {
+      if (e.code == "KeyA") {
         this.card_index -= 1;
         if (this.card_index < 0) this.card_index = this.word_list.length - 1;
       }
     },
     play_aduio() {
-      let el = document.getElementById("card_audio")
-      setTimeout(el=>{el.play()}, 200, el)
+      let el = document.getElementById("card_audio");
+      setTimeout(
+        (el) => {
+          el.play();
+        },
+        200,
+        el
+      );
     },
     add_favorite() {
       this.app_data.user.notebooks.currNotebook

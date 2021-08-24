@@ -15,6 +15,8 @@
         prepend-icon="mdi-close"
         @click:prepend="hide_language(language.en)"
         hide-details
+        :style="`color:${app_data.theme_color.content}`"
+        :dark="app_data.theme.brightness <= 50"
       ></v-text-field>
     </v-col>
 
@@ -23,10 +25,10 @@
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             :class="
-              unshowned_language.length == 0 ? 'primary lighten-5' : 'primary'
+              unshowned_language.length == 0 ? 'primary lighten-1' : 'primary'
             "
             :elevation="unshowned_language.length == 0 ? 0 : 3"
-            dark
+            :dark="app_data.theme.brightness <= 50"
             v-bind="attrs"
             v-on="on"
             fab
@@ -39,7 +41,7 @@
             </v-icon>
           </v-btn>
         </template>
-        <v-list>
+        <v-list :dark="app_data.theme.brightness <= 50">
           <v-list-item
             v-for="language in unshowned_language"
             :key="language.key"
@@ -129,6 +131,11 @@ export default {
             await this.app_data.user.notebooks.currNotebook.check_duplicate_word(
               this.record
             );
+
+          let next_lan = this.showned_language[0].key;
+          let el = document.getElementById(`new_word_${next_lan}`);
+          this.select_all_input(el);
+
           // console.log(duplicated);
           if (duplicated == null) {
             await this.app_data.user.notebooks.currNotebook.add_record(
@@ -136,8 +143,8 @@ export default {
             );
             for (var i = 0; i < this.showned_language.length; i++) {
               let lan_key = this.showned_language[i].key;
-              if (i==0){
-                await utilities.wait(500)
+              if (i == 0) {
+                await utilities.wait(500);
               }
               let audio = new Audio(
                 this.get_src(this.record[lan_key], lan_key)
@@ -149,9 +156,6 @@ export default {
           }
 
           // console.log(this.app_data.user.notebooks.currNotebook.word_list);
-          let next_lan = this.showned_language[0].key;
-          let el = document.getElementById(`new_word_${next_lan}`);
-          this.select_all_input(el);
         } else {
           // this.record[curr_lan] = event.target.value;
           let next_lan = this.showned_language[index + 1].key;

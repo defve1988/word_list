@@ -24,7 +24,7 @@
     </v-app-bar>
     <NavBar />
 
-    <v-main>
+    <v-main :style="`background-color:${app_data.theme_color.app_bg}`">
       <router-view />
     </v-main>
     <LoginRegister />
@@ -48,16 +48,21 @@ export default {
       app_data: "app_data",
     }),
     islogin() {
-      return this.app_data.user.isLogin()
+      return this.app_data.user.isLogin();
     },
   },
+
+  async mounted() {
+    await this.SET_THEME()
+  },
+
   // async mounted() {
   //   this.app_data.isloading = true;
   //   // this.app_data.user = new User();
   //   this.app_data.isloading = false;
   // },
   methods: {
-    ...mapMutations([]),
+    ...mapMutations(["SET_THEME"]),
     route_home() {
       this.$router
         .replace({
@@ -88,5 +93,4 @@ export default {
   font-family: "Big Shoulders Stencil Display", Helvetica, Arial, sans-serif;
   font-weight: medium;
 }
-
 </style>

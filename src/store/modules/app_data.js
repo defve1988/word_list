@@ -18,10 +18,27 @@ firebase.auth().onAuthStateChanged(() => {
    // console.log(state)
 })
 
+const theme_default = {
+   dark: true,
+   brightness: 10,
+   app_bg: 15 / 2.55,
+   nav_bar_bg: 25 / 2.55,
+   content_color: 180 / 2.55,
+   card_bg: 45 / 2.55,
+
+   text_font_size: null,
+   text_font_wight: null,
+   text_font: null,
+}
+
 const state = {
 
+   theme: theme_default,
 
-   dark_theme:false,
+   theme_color: {
+
+   },
+
    dev_test: true,
    // test: new Test(),
 
@@ -93,8 +110,6 @@ const state = {
       show: false
    }
 
-
-
 };
 
 const getters = {
@@ -105,6 +120,31 @@ const actions = {};
 
 const mutations = {
 
+   async SET_THEME(stat) {
+      // let user_theme = await state.user.theme()
+      // console.log(user_theme)
+      // if (state.theme==null){
+      //    state.theme = theme_default
+      // }
+
+      let brightness = stat.theme.brightness;
+      let app_bg_color = stat.theme.app_bg * 2.55;
+      let nav_bg_color = stat.theme.nav_bar_bg * 2.55;
+      let card_bg_color = stat.theme.card_bg * 2.55;
+      let content_color = stat.theme.content_color * 2.55;
+
+      app_bg_color = app_bg_color + 2.55 * brightness;
+      nav_bg_color = nav_bg_color + 2.55 * brightness;
+      card_bg_color = card_bg_color + 2.55 * brightness;
+      content_color = Math.abs(2.55 * brightness - content_color);
+      // console.log(content_color)
+      stat.theme_color = {
+         app_bg: `rgba(${app_bg_color}, ${app_bg_color}, ${app_bg_color})`,
+         nav_bg: `rgba(${nav_bg_color}, ${nav_bg_color}, ${nav_bg_color})`,
+         card_bg: `rgba(${card_bg_color}, ${card_bg_color}, ${card_bg_color})`,
+         content: `rgba(${content_color}, ${content_color}, ${content_color},1)`,
+      };
+   },
    LOAD_WORDLSIT(state) {
       state.user.word_list.get_word_list()
       state.user.word_list.word_list.forEach(element => {

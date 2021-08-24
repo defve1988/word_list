@@ -1,5 +1,8 @@
 <template>
-  <v-row class="ma-0 record-row">
+  <v-row
+    class="ma-0 record-row"
+    :style="`border-color:${app_data.theme_color.content}`"
+  >
     <v-col
       cols="2"
       align-self="center"
@@ -25,6 +28,7 @@
     >
       <pre
         class="note_tooltip body-1 font-weight-light"
+        :style="`color:${app_data.theme_color.content}`"
         v-html="record.notes == '' ? empty_word : record.notes"
         @click="edit_note_at_list"
         @blur="lose_focus"
@@ -41,6 +45,8 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   icon
+                  :color="app_data.theme_color.content"
+                  :dark="app_data.theme.brightness <= 50"
                   v-if="func.class == 'heart'"
                   :class="record.favorite ? func.selected : func.class"
                   v-bind="attrs"
@@ -52,6 +58,8 @@
 
                 <v-btn
                   icon
+                  :color="app_data.theme_color.content"
+                  :dark="app_data.theme.brightness <= 50"
                   v-if="func.class == 'check'"
                   :class="record.mastered ? func.selected : func.class"
                   v-bind="attrs"
@@ -63,6 +71,8 @@
 
                 <v-btn
                   icon
+                  :color="app_data.theme_color.content"
+                  :dark="app_data.theme.brightness <= 50"
                   v-if="func.class == 'del'"
                   :class="func.class"
                   v-bind="attrs"
@@ -312,15 +322,16 @@ export default {
     }
   }
   .favorite {
-    color: #e91e63;
+    color: #e91e63 !important;
   }
   .mastered {
-    color: #2cc026;
+    color: #2cc026 !important;
   }
 }
 
 .note_tooltip {
   float: center;
   cursor: text;
+  white-space: pre-wrap;
 }
 </style>

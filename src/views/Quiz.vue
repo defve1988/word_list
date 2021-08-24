@@ -1,7 +1,14 @@
 <template>
   <v-container>
     <v-row class="ma-2">
-      <v-btn @click="quiz_config" elevation="1" outlined small>Start</v-btn>
+      <v-btn
+        @click="quiz_config"
+        elevation="1"
+        outlined
+        small
+        :color="app_data.theme_color.content"
+        >New Quiz</v-btn
+      >
     </v-row>
     <v-row class="ma-0 mt-5 pa-0">
       <v-carousel
@@ -14,7 +21,12 @@
           v-for="(question, question_index) in app_data.user.quiz.quiz_list"
           :key="question_index"
         >
-          <v-sheet class="pt-0" height="100%" tile>
+          <v-sheet
+            class="pt-0"
+            height="100%"
+            tile
+            :color="app_data.theme_color.app_bg"
+          >
             <v-container fill-height fluid>
               <!-- <v-row class="ma-0 pt-2 px-2">
                 <v-col align-self="end" align="end" class="ma-0 pa-0 px-2">
@@ -24,7 +36,12 @@
                 </v-col>
               </v-row> -->
 
-              <v-row class="pa-5 pb-0" align-self="center" justify="center">
+              <v-row
+                class="pa-5 pb-0"
+                align-self="center"
+                justify="center"
+                :style="`color:${app_data.theme_color.content}`"
+              >
                 <div
                   class="text-h3"
                   @click="play_aduio"
@@ -46,6 +63,7 @@
                     class="spell_input text-h5 font-weight-light mx-2 pa-3"
                     @keydown="key_down"
                     :id="`spell_${question_index}`"
+                    :dark="app_data.theme.brightness <= 50"
                   ></v-text-field>
 
                   <v-scroll-x-transition>
@@ -59,7 +77,12 @@
                     </div>
                   </v-scroll-x-transition>
 
-                  <v-btn icon class="ml-3" @click="play_aduio">
+                  <v-btn
+                    icon
+                    class="ml-3"
+                    @click="play_aduio"
+                    :color="app_data.theme_color.content"
+                  >
                     <v-icon> mdi-volume-high </v-icon>
                   </v-btn>
                 </div>
@@ -67,7 +90,7 @@
 
               <v-row
                 align="start"
-                 align-self="start"
+                align-self="start"
                 justify="center"
                 v-if="quiz_type != 'Spell'"
               >
@@ -79,7 +102,12 @@
                       justify="center"
                     >
                       <v-item>
-                        <v-card flat @click="next_question(index_choice)">
+                        <v-card
+                          flat
+                          @click="next_question(index_choice)"
+                          :color="app_data.theme_color.app_bg"
+                          :style="`color:${app_data.theme_color.content}`"
+                        >
                           <v-scroll-x-transition>
                             <div
                               class="text-h4 font-weight-light text-center pa-2"
@@ -310,11 +338,11 @@ export default {
 <style scoped lang="css">
 .error {
   color: red !important;
-  background-color: rgba(255, 44, 44, 0.356) !important;
+  background-color: rgba(255, 44, 44, 0.4) !important;
 }
 
 .correct {
-  color: green;
-  background-color: rgba(0, 128, 0, 0.383);
+  color: rgb(0, 255, 0);
+  background-color: rgba(0, 128, 0, 0.4);
 }
 </style>

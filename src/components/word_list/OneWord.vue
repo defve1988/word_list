@@ -1,7 +1,18 @@
 <template>
-  <div class="word_div">
-    <span v-if="numbered" style="float: left"> {{ numbered }}. </span>
-    <v-tooltip bottom :disabled="notes == '' || app_data.show_word_list_notes" nudge-bottom="10" max-width="300">
+  <div class="word_div" :style="`border-color:${app_data.theme_color.content}`">
+    <span
+      v-if="numbered"
+      style="float: left"
+      :style="`color:${app_data.theme_color.content}`"
+    >
+      {{ numbered }}.
+    </span>
+    <v-tooltip
+      bottom
+      :disabled="notes == '' || app_data.show_word_list_notes"
+      nudge-bottom="10"
+      max-width="300"
+    >
       <template v-slot:activator="{ on, attrs }">
         <span
           class="word"
@@ -16,14 +27,20 @@
           @keydown="key_down"
           v-bind="attrs"
           v-on="on"
+          :style="`color:${app_data.theme_color.content}`"
         >
           {{ word == "" ? empty_word : word }}
         </span>
       </template>
-      <pre class="note_tooltip" style="max-width:300px" v-html="notes"></pre>
+      <pre class="note_tooltip" v-html="notes"></pre>
     </v-tooltip>
 
-    <audio :id="`audio_${language}_${id}`" preload="auto" type="audio/mpeg" :src="audio_src"></audio>
+    <audio
+      :id="`audio_${language}_${id}`"
+      preload="auto"
+      type="audio/mpeg"
+      :src="audio_src"
+    ></audio>
   </div>
 </template>
 
@@ -116,8 +133,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.note_tooltip{
+.note_tooltip {
   white-space: pre-wrap;
+  max-width: 300px;
 }
 .word {
   cursor: pointer;
@@ -127,7 +145,7 @@ export default {
 
   &:hover {
     font-weight: 800;
-    color: #9f9f;
+    color: #9f9f !important;
   }
   &:focus {
     background-color: red;
@@ -136,12 +154,14 @@ export default {
 .clicked {
   font-weight: 800;
 }
+
 .word_div {
   border-right-style: solid;
   border-width: 1px;
 }
+
 .v-tooltip__content.menuable__content__active {
-  background-color: rgba(0, 255, 0, 0.753);
+  background-color: rgba(0, 255, 0, 0.8);
   color: rgb(66, 66, 66);
 }
 </style>

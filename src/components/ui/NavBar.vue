@@ -5,35 +5,40 @@
     clipped
     permanent
     width="200"
-    :style="app_data.dark_theme ? 'background: #222326' : 'background: #eeee'"
+    :style="`background-color:${app_data.theme_color.nav_bg}`"
   >
     <v-list-group appendIcon="" @click="click_notebook()">
       <template v-slot:activator>
         <v-list-item-icon>
-          <v-icon>{{ notebook_item.icon }}</v-icon>
+          <v-icon :color="app_data.theme_color.content">{{
+            notebook_item.icon
+          }}</v-icon>
         </v-list-item-icon>
         <v-list-item-content>
-          <v-list-item-title class="font-weight-light">{{
-            notebook_item.text
-          }}</v-list-item-title>
-        </v-list-item-content>
-      </template>
-      <template v-if="!app_data.mini_drawer">
-        <v-list-item
-          v-for="(notebook, index) in app_data.notebook_info"
-          :key="index"
-          dense
-          @click="open_notebook(notebook.id)"
-        >
-          <v-list-item-icon class="ml-5 mr-2">
-            <v-icon small>mdi-notebook</v-icon>
-          </v-list-item-icon>
           <v-list-item-title
             class="font-weight-light"
-            v-text="notebook.notebook_name"
-          ></v-list-item-title>
-        </v-list-item>
+            :style="`color:${app_data.theme_color.content}`"
+            >{{ notebook_item.text }}</v-list-item-title
+          >
+        </v-list-item-content>
       </template>
+      <v-list-item
+        v-for="(notebook, index) in app_data.notebook_info"
+        :key="index"
+        dense
+        @click="open_notebook(notebook.id)"
+      >
+        <v-list-item-icon :class="app_data.mini_drawer ? '' : 'ml-5 mr-2'">
+          <v-icon small :color="app_data.theme_color.content"
+            >mdi-notebook</v-icon
+          >
+        </v-list-item-icon>
+        <v-list-item-title
+          class="font-weight-light"
+          v-text="notebook.notebook_name"
+          :style="`color:${app_data.theme_color.content}`"
+        ></v-list-item-title>
+      </v-list-item>
     </v-list-group>
 
     <v-list class="pt-0">
@@ -43,16 +48,21 @@
         @click="nav_func(item.func)"
         :to="item.router == '' ? null : { name: item.router }"
       >
-        <v-divider v-if="item.icon == 'divider'"></v-divider>
+        <!-- <v-divider
+          v-if="item.icon == 'divider'"
+          dark="true"
+        ></v-divider> -->
 
         <v-list-item-icon v-if="item.icon != 'divider'">
-          <v-icon>{{ item.icon }}</v-icon>
+          <v-icon :color="app_data.theme_color.content">{{ item.icon }}</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content v-if="item.icon != 'divider'">
-          <v-list-item-title class="font-weight-light">{{
-            item.text
-          }}</v-list-item-title>
+          <v-list-item-title
+            class="font-weight-light"
+            :style="`color:${app_data.theme_color.content}`"
+            >{{ item.text }}</v-list-item-title
+          >
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -73,7 +83,7 @@ export default {
     },
     items: [
       {
-        icon: "mdi-progress-question",
+        icon: "mdi-clipboard-check-multiple-outline",
         text: "Quizzes",
         func: "quiz",
         router: "Quiz",
@@ -84,9 +94,9 @@ export default {
         func: "stats",
         router: "Stats",
       },
-      { icon: "mdi-information", text: "About", func: "test", router: "About" },
+      { icon: "mdi-cog", text: "Setting", func: "test", router: "About" },
       // { icon: "mdi-translate", text: "Languages", func: "" },
-      { icon: "divider", text: "", func: "", router: "" },
+      // { icon: "divider", text: "", func: "", router: "" },
       { icon: "mdi-logout", text: "Logout", func: "logout", router: "" },
     ],
   }),

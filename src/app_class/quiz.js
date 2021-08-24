@@ -105,7 +105,7 @@ export default class Quiz {
 
          if (selecting.length < this.config.question_num) {
             alert("No enough words!")
-            return Promise.resolve()
+            return Promise.resolve(false)
          }
 
          let questions = _.sample(selecting, this.config.question_num)
@@ -146,7 +146,7 @@ export default class Quiz {
          })
 
          // console.log(this.quiz_list)
-         return Promise.resolve()
+         return Promise.resolve(true)
       } catch (error) {
          console.error("Error when creating quiz:", error);
          return Promise.reject(error);
