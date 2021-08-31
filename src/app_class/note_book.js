@@ -264,9 +264,8 @@ export default class NoteBook {
          case "learned":
             this.word_list = _.sortBy(this.word_list, 'last_learned')
             break;
-         case "error rate":
-            // todo:  
-            this.word_list = _.sortBy(this.word_list, 'error')
+         case "score":
+            this.word_list = _.sortBy(this.word_list, 'score')
             break;
          case "type":
             this.word_list = _.sortBy(this.word_list, 'mastered')

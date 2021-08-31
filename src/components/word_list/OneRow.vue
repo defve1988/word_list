@@ -1,8 +1,5 @@
 <template>
-  <v-row
-    class="ma-0 record-row"
-    :style="`border-color:${app_data.theme_color.content}`"
-  >
+  <v-row class="ma-0 record-row" :style="record_row_style">
     <v-col
       cols="2"
       align-self="center"
@@ -89,13 +86,15 @@
 
         <v-col align-self="center" class="mx-0 pl-0">
           <v-progress-linear
-            :value="correct_rate"
+            :value="curr_score"
             :color="bar_color"
             rounded
             height="15"
           >
             <strong class="font-weight-light caption"
-              >{{ record.learned - record.error }}/{{ record.learned }}</strong
+              >{{ record.score == null ? 0 : Math.floor(record.score) }}/{{
+                app_data.learning.learning_goal
+              }}</strong
             >
           </v-progress-linear>
         </v-col>
@@ -142,6 +141,12 @@ export default {
     ...mapState({
       app_data: "app_data",
     }),
+    record_row_style() {
+      return {
+        "--border-color": this.app_data.theme_color.content,
+        "--bg-color-hover": this.app_data.theme_color.nav_bg,
+      };
+    },
     showned_language() {
       let res = [];
       this.app_data.user.notebooks.currNotebook.languages.forEach((lan) => {
@@ -183,25 +188,29 @@ export default {
       return res;
     },
 
-    correct_rate() {
-      return (
-        ((this.record.learned - this.record.error) / this.record.learned) * 100
-      );
+    curr_score() {
+      return (this.record.score / this.app_data.learning.learning_goal) * 100;
     },
     bar_color() {
       let color;
       switch (true) {
-        case isNaN(this.correct_rate):
+        case isNaN(this.curr_score) || this.curr_score == 0:
           color = "grey";
           break;
-        case this.correct_rate >= 80:
-          color = "green";
+        case this.curr_score >=100:
+          color = "#00E676";
           break;
-        case this.correct_rate >= 50:
+        case this.curr_score >= 80:
+          color = "light-green";
+          break;
+        case this.curr_score >= 50:
           color = "amber";
           break;
-        default:
+        case this.curr_score < 0:
           color = "red";
+          break;
+        default:
+          color = "yellow";
           break;
       }
       return color;
@@ -291,8 +300,9 @@ export default {
   transition: all 0.1s;
   border-style: hidden hidden dashed hidden;
   border-width: 0.5px;
+  border-color: var(--border-color);
   &:hover {
-    background-color: rgba(61, 61, 61, 0.85);
+    background-color: var(--bg-color-hover);
     color: #fff;
     .heart,
     .edit_note,
@@ -303,7 +313,7 @@ export default {
   }
   .heart {
     &:hover {
-      color: #d65781;
+      color: #d65781 !important;
     }
   }
   .label {
@@ -313,12 +323,12 @@ export default {
   }
   .check {
     &:hover {
-      color: #9f9f;
+      color: #9f9f !important;
     }
   }
   .del {
     &:hover {
-      color: #f44336;
+      color: #f44336 !important;
     }
   }
   .favorite {

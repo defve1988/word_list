@@ -62,7 +62,7 @@ export default {
   //   this.app_data.isloading = false;
   // },
   methods: {
-    ...mapMutations(["SET_THEME"]),
+    ...mapMutations(["SET_THEME", "SET_QUIZ_CONFIG", "SET_LEARNING"]),
     route_home() {
       this.$router
         .replace({
@@ -72,16 +72,30 @@ export default {
     },
   },
   watch: {
-    islogin() {
+    async islogin() {
+      this.app_data.isloading = true;
       if (this.app_data.user.isLogin()) {
+        // if user is login, load user's theme, quiz_config, ...
         this.$router
-          .replace({ path: "Notebooks" })
+          .replace({ path: this.app_data.login_page })
           .catch(utilities.handle_redundant_route);
+
+        this.app_data.theme = await this.app_data.user.get_user_theme();
+        this.SET_THEME();
+
+        this.app_data.notebook_view = await this.app_data.user.get_detail(
+          "notebook_view"
+        );
+        let quiz_config = await this.app_data.user.get_user_quiz_config();
+        this.SET_QUIZ_CONFIG(quiz_config);
+        let learning_config = await this.app_data.user.get_user_learning();
+        this.SET_LEARNING(learning_config);
       } else {
         this.$router
           .replace({ path: "/" })
           .catch(utilities.handle_redundant_route);
       }
+      this.app_data.isloading = false;
     },
   },
 };
@@ -92,5 +106,8 @@ export default {
   font-size: 2.5rem;
   font-family: "Big Shoulders Stencil Display", Helvetica, Arial, sans-serif;
   font-weight: medium;
+}
+html {
+  scroll-behavior: smooth;
 }
 </style>

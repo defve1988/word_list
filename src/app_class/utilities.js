@@ -8,15 +8,21 @@ import _ from "underscore"
 // let audio = new Audio('url')
 // await utilities.playAudio(audio);
 
-function playAudio(audio){
-   return new Promise(res=>{
-     audio.play()
-     audio.onended = res
+function playAudio(audio) {
+   return new Promise(res => {
+      audio.play()
+      audio.onended = res
    })
- }
+}
 
 function wait(ms) {
    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function key2display(key) {
+   let en = world_language.key_en[key]
+   return world_language.world_language[en].display
+
 }
 
 function en2display(languages) {
@@ -25,6 +31,7 @@ function en2display(languages) {
       return world_language.world_language[lan].display
    })
 }
+
 function display2key(languages) {
    // note: utf-8 space is "\xa0"
    return _.map(languages, (lan) => {
@@ -155,11 +162,12 @@ function handle_redundant_route(err) {
    }
 }
 
-// todo: change all audios to simple audio play
+
 
 export default {
    playAudio,
    wait,
+   key2display,
    en2display,
    display2key,
    lan2key,

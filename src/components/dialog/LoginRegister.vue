@@ -114,7 +114,14 @@ export default {
         invitationCode: this.invitation,
       };
       let res = await this.app_data.user.auth.register(new_user);
-      await this.app_data.user.init_user_db()
+      await this.app_data.user.init_user_db();
+      await this.app_data.user.set_detail({
+        databaseVersion: this.app_data.databaseVersion,
+        notebook_view: this.app_data.databaseVersion,
+      });
+      await this.app_data.user.set_theme(this.app_data.theme);
+      await this.app_data.user.set_quiz_config(this.app_data.quiz_dialog);
+
       this.isLoading = false;
       if (res == "registered") this.app_data.register_dialog = false;
     },

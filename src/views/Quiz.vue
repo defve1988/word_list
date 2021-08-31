@@ -44,7 +44,7 @@
               >
                 <div
                   class="text-h3"
-                  @click="play_aduio"
+                  @click="play_aduio_1"
                   style="cursor: pointer"
                   v-if="quiz_type == 'Word-Word'"
                 >
@@ -80,7 +80,7 @@
                   <v-btn
                     icon
                     class="ml-3"
-                    @click="play_aduio"
+                    @click="play_aduio_1"
                     :color="app_data.theme_color.content"
                   >
                     <v-icon> mdi-volume-high </v-icon>
@@ -142,6 +142,22 @@
         </v-carousel-item>
       </v-carousel>
     </v-row>
+    <v-row justify="center" v-if="show_question_response">
+      <v-col>
+        <v-card
+          flat
+          :color="app_data.theme_color.app_bg"
+          :style="`color:${app_data.theme_color.content}`"
+          class="display-1"
+        >
+          <v-scroll-x-transition>
+            <div :class="question_response.class" align="end">
+              {{ question_response.text }}
+            </div>
+          </v-scroll-x-transition>
+        </v-card>
+      </v-col>
+    </v-row>
     <QuizRes />
     <QuizConfigure />
     <audio
@@ -161,6 +177,7 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import utilities from "@/app_class/utilities";
 
 export default {
   name: "quiz",
@@ -171,6 +188,11 @@ export default {
     spell_answer: "",
     isCorrect: true,
     show_answer: false,
+    question_start: null,
+    question_answered: null,
+    show_question_response: false,
+    question_response: {},
+    buffer_time: 150,
   }),
   computed: {
     ...mapState({
@@ -181,13 +203,17 @@ export default {
     },
     audio_src_1() {
       if (this.app_data.user.quiz.quiz_list.length == 0) return "";
-      let language = this.app_data.quiz_dialog.config.question_lan;
+      let language = utilities.display2key([
+        this.app_data.quiz_dialog.config.question_lan,
+      ])[0];
       let word = this.app_data.user.quiz.quiz_list[this.quiz_index].question;
       return `https://www.google.com/speech-api/v1/synthesize?text=${word}&enc=mpeg&lang=${language}&speed=0.4&client=lr-language-tts&use_google_only_voices=1`;
     },
     audio_src_2() {
       if (this.app_data.user.quiz.quiz_list.length == 0) return "";
-      let language = this.app_data.quiz_dialog.config.choice_lan;
+      let language = utilities.display2key([
+        this.app_data.quiz_dialog.config.choice_lan,
+      ])[0];
       let word =
         this.app_data.user.quiz.quiz_list[this.quiz_index].correct_answer;
       return `https://www.google.com/speech-api/v1/synthesize?text=${word}&enc=mpeg&lang=${language}&speed=0.4&client=lr-language-tts&use_google_only_voices=1`;
@@ -199,7 +225,10 @@ export default {
   watch: {
     audio_src_1() {
       // this means a new question is given
-      this.play_aduio();
+      this.question_start = new Date();
+      let audio = document.getElementById("quiz_audio_1");
+      audio.onended = () => {};
+      this.play_aduio_1();
       if (this.quiz_type == "Spell") {
         this.set_question_focus(0);
       }
@@ -213,47 +242,101 @@ export default {
       el.focus();
     },
 
-    key_down(e) {
-      if (e.keyCode === 13) {
-        if (this.spell_answer == this.currQuestion.question) {
-          this.isCorrect = true;
-          this.app_data.user.quiz.quiz_list[this.quiz_index].correct = true;
-        } else {
-          this.isCorrect = false;
-          this.app_data.user.quiz.quiz_list[this.quiz_index].correct = false;
-        }
-        this.show_answer = true;
-        let audio2 = document.getElementById("quiz_audio_2");
-        audio2.play();
-        audio2.onended = () => {
-          this.set_next_question();
-        };
-      }
-    },
-
     quiz_config() {
-      console.log(this.app_data.quiz_dialog.created);
+      // console.log(this.app_data.quiz_dialog.created);
       this.quiz_index = 0;
       this.app_data.quiz_dialog.created = false;
       this.app_data.quiz_dialog.show = true;
     },
 
-    async play_aduio() {
+    async play_aduio_1() {
       // todo: this is not good enough, need to check the networkstate
       // console.log(audio1.networkState)
       await new Promise((resolve) => setTimeout(resolve, 200));
-      let audio1 = document.getElementById("quiz_audio_1");
-      audio1.play();
+      let audio = document.getElementById("quiz_audio_1");
+      audio.play();
+    },
+    async play_aduio_2() {
+      // todo: this is not good enough, need to check the networkstate
+      // console.log(audio1.networkState)
+      let audio = document.getElementById("quiz_audio_2");
+      audio.play();
+    },
+
+    get_question_response(isCorrect) {
+      let excellent_response =
+        this.app_data.user.quiz.config.excellent_response * 1000;
+      if (this.quiz_type == "Spell") {
+        excellent_response *= 5;
+        // console.log(excellent_response)
+      }
+      let response_time =
+        this.question_answered - this.question_start - this.buffer_time;
+      // console.log(response_time)
+      let response = {
+        text: "",
+        score: 0,
+        class: "",
+      };
+      if (!isCorrect) {
+        response.type = "error";
+        response.text = "Try next time.";
+        response.class = "error_response";
+      } else if (response_time <= excellent_response) {
+        response.type = "excellent";
+        response.text = "Excellent!";
+        response.class = "excellent_response";
+      } else if (response_time <= excellent_response * 2) {
+        response.type = "nice";
+        response.text = "Nice!";
+        response.class = "nice_response";
+      } else if (response_time <= excellent_response * 3) {
+        response.type = "ok";
+        response.text = "OK.";
+        response.class = "ok_response";
+      } else {
+        response.type = "correct";
+        response.text = "Correct.";
+        response.class = "correct_response";
+      }
+      return response;
+    },
+
+    key_down(e) {
+      if (e.keyCode === 13) {
+        this.question_answered = new Date();
+        this.show_question_response = true;
+        let isCorrect = this.spell_answer == this.currQuestion.question;
+        this.question_response = this.get_question_response(isCorrect);
+        this.isCorrect = isCorrect;
+        this.app_data.user.quiz.quiz_list[this.quiz_index].correct = isCorrect;
+        this.app_data.user.quiz.quiz_list[this.quiz_index].response = {
+          response: this.question_response.type,
+          quiz_type: this.quiz_type,
+        };
+
+        this.show_answer = true;
+        let audio = document.getElementById("quiz_audio_1");
+        audio.play();
+        audio.onended = () => {
+          this.set_next_question();
+        };
+      }
     },
 
     async next_question(answer) {
       // console.log(this.quiz_index);
+      this.question_answered = new Date();
+      this.show_question_response = true;
+
       this.answer = answer;
       let isCorrect =
         this.app_data.user.quiz.quiz_list[this.quiz_index].choice[this.answer]
           .correct;
       let el = document.getElementsByClassName(`choice_${this.answer}`);
       // handle correct or error animiation effect
+      this.app_data.user.quiz.score.tested += 1;
+      this.question_response = this.get_question_response(isCorrect);
       if (isCorrect) {
         this.app_data.user.quiz.quiz_list[this.quiz_index].choice[
           this.answer
@@ -262,6 +345,7 @@ export default {
           element.classList.add("correct");
         });
       } else {
+        this.app_data.user.quiz.score.error += 1;
         let correct_answer_index;
         for (var i = 0; i < this.app_data.quiz_dialog.config.choice_num; i++) {
           if (
@@ -292,30 +376,19 @@ export default {
       }
       // record result
       this.app_data.user.quiz.quiz_list[this.quiz_index].correct = isCorrect;
+      this.app_data.user.quiz.quiz_list[this.quiz_index].response = {
+        response: this.question_response.type,
+        quiz_type: this.quiz_type,
+      };
+
       // play word audio
-      if (this.app_data.quiz_dialog.play_audio_1) {
-        let audio1 = document.getElementById("quiz_audio_1");
-        audio1.play();
-        audio1.onended = () => {
-          if (this.app_data.quiz_dialog.play_audio_2) {
-            let audio2 = document.getElementById("quiz_audio_2");
-            audio2.play();
-            audio2.onended = () => {
-              this.set_next_question();
-            };
-          }
+      if (this.app_data.quiz_dialog.play_audio) {
+        let audio = document.getElementById("quiz_audio_2");
+        audio.play();
+        audio.onended = () => {
+          this.set_next_question();
         };
       } else {
-        if (this.app_data.quiz_dialog.play_audio_2) {
-          let audio2 = document.getElementById("quiz_audio_2");
-          audio2.play();
-          audio2.onended = () => {
-            this.set_next_question();
-          };
-        }
-      }
-
-      if (!this.app_data.quiz_dialog.play_audio_2) {
         // goto next question
         this.set_next_question();
       }
@@ -327,15 +400,37 @@ export default {
       } else {
         this.quiz_index = 0;
         this.app_data.quiz_dialog.created = false;
+
+        let response_score = {
+          excellent: this.app_data.learning.learning_excellent_scores,
+          nice: this.app_data.learning.learning_nice_scores,
+          ok: this.app_data.learning.learning_ok_scores,
+          correct: this.app_data.learning.learning_correct_score,
+          error: this.app_data.learning.learning_error_score,
+          excellent_chain:
+            this.app_data.learning.learning_excellent_chain_award,
+          nice_chain: this.app_data.learning.learning_nice_chain_award,
+          time_effect: this.app_data.learning.learning_time_award_effected,
+        };
+        if (this.app_data.quiz_dialog.quiz_type == "Spell") {
+          response_score.excellent *= 3;
+          response_score.nice *= 3;
+          response_score.ok *= 3;
+          response_score.correct *= 3;
+        }
+
+        this.app_data.user.quiz.summary(response_score);
         this.app_data.quiz_res_dialog.show = true;
       }
       this.show_answer = false;
+      this.show_question_response = false;
+      this.question_start = new Date();
       this.spell_answer = "";
     },
   },
 };
 </script>
-<style scoped lang="css">
+<style scoped lang="scss">
 .error {
   color: red !important;
   background-color: rgba(255, 44, 44, 0.4) !important;
@@ -344,5 +439,21 @@ export default {
 .correct {
   color: rgb(0, 255, 0);
   background-color: rgba(0, 128, 0, 0.4);
+}
+
+.error_response {
+  color: rgba(255, 44, 44);
+}
+.excellent_response {
+  color: rgb(183, 0, 255);
+}
+.nice_response {
+  color: rgb(0, 255, 157);
+}
+.ok_response {
+  color: rgb(0, 255, 0);
+}
+.correct_response {
+  color: rgb(255, 208, 0);
 }
 </style>

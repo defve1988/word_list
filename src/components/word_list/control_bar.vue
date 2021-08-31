@@ -172,7 +172,7 @@ export default {
         icons: ["mdi-sort-calendar-ascending", "mdi-sort-calendar-descending"],
       },
       {
-        title: "Error rate",
+        title: "Score",
         ascending: true,
         icons: ["mdi-sort-ascending", "mdi-sort-descending"],
       },

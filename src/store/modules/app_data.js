@@ -1,5 +1,9 @@
 import world_language from "@/app_class/languages"
 import User from "@/app_class/user";
+
+import firestore_update from "@/app_class/firestore_update"
+
+
 // import Test from "@/app_class/test";
 
 import firebase from "firebase/app";
@@ -19,8 +23,8 @@ firebase.auth().onAuthStateChanged(() => {
 })
 
 const theme_default = {
-   dark: true,
-   brightness: 10,
+   dark: false,
+   brightness: 90,
    app_bg: 15 / 2.55,
    nav_bar_bg: 25 / 2.55,
    content_color: 180 / 2.55,
@@ -32,8 +36,11 @@ const theme_default = {
 }
 
 const state = {
-
+   firestore_db: firestore_update,
+   db_version: "v0.1",
    theme: theme_default,
+   // login_page : "Notebooks",
+   login_page: "NoteBooks",
 
    theme_color: {},
 
@@ -93,21 +100,36 @@ const state = {
    quiz_dialog: {
       show: false,
       created: false,
+      notebook_name: "",
       notebook_id: "",
-      quiz_type: "",
-      play_audio_1: false,
-      play_audio_2: true,
+      quiz_type: "Word-Word",
+      play_audio: true,
       config: {
          question_num: 20,
          choice_num: 4,
-         question_lan: "en",
-         choice_lan: "zh",
+         question_lan: "",
+         choice_lan: "",
          // TODO:
-         range: "necessary", //necessary, all, favorite, mastered, not mastered
+         range: "Necessary", //necessary, all, favorite, mastered, not mastered,
+         excellent_response: 1.5
       }
    },
    quiz_res_dialog: {
       show: false
+   },
+
+   learning: {
+      learning_goal: 20,
+      learning_excellent_scores: 5,
+      learning_nice_scores: 3,
+      learning_ok_scores: 2,
+      learning_correct_score: 1,
+      learning_error_score: -2.5,
+      learning_excellent_chain_award: 3, // get additional excellent score
+      learning_nice_chain_award: 3, //get additional nice score
+      //time multiplier will effected after 3 days
+      // multiplier work as score*(1+log(days))
+      learning_time_award_effected: 3,
    }
 
 };
@@ -116,9 +138,55 @@ const getters = {
 
 };
 
-const actions = {};
+const actions = {
+
+   async UPDATE_DB({
+      state
+   }) {
+      state.firestore_db.auth(state.user.auth)
+      state.firestore_db.update_structure()
+   },
+
+   async CHECK_DB({
+      state
+   }) {
+      state.firestore_db.auth(state.user.auth)
+      let res = await state.firestore_db.isField("databaseVersion")
+      if (!res) {
+         state.firestore_db.addField({
+            "databaseVersion": state.db_version
+         })
+         alert("Please update database!")
+      } else {
+         let version = await state.firestore_db.check_db_version(state.db_version)
+         if (!version) {
+            alert("Please update database!")
+         } else {
+            alert("Database is up-to-date.")
+         }
+      }
+   }
+};
 
 const mutations = {
+
+   SET_QUIZ_CONFIG(state, quiz_config) {
+      Object.assign(
+         state.quiz_dialog,
+         quiz_config
+      )
+      // console.log(quiz_config)
+      // console.log(state.quiz_dialog)
+   },
+
+   SET_LEARNING(state, learning) {
+      Object.assign(
+         state.learning,
+         learning
+      )
+      console.log(learning)
+      // console.log(state.quiz_dialog)
+   },
 
    async SET_THEME(stat) {
       // let user_theme = await state.user.theme()

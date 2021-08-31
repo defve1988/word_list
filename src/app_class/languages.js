@@ -1,3 +1,12 @@
+var key_en={
+   'ja':'Japanese',
+   'zh':'Chinese (Simplified)',
+   'da':'Danish',
+   'en':'English',
+   'de':'German',
+   'fr':'French',
+}
+
 var world_language = {
    'Japanese': {
       'key': 'ja',
@@ -539,4 +548,4 @@ var world_language = {
    // },
 }
 
-export default {world_language}
+export default {world_language, key_en}
